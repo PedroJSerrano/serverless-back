@@ -7,8 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="login-module" />
-        <module name="HelloWorld" />
+        <module name="user-management-module" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="HelloWorld" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
