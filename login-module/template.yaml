@@ -10,7 +10,7 @@ Resources:
   AuthLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.pjserrano.auth.AuthLambdaHandler::handleRequest # ¡MUY IMPORTANTE! Tu Handler
+      Handler: com.pjserrano.auth.infrastructure.adapter.in.web.AuthLambdaHandler::handleRequest # ¡MUY IMPORTANTE! Tu Handler
       Runtime: java21
       CodeUri: auth-module # Esto apunta a la carpeta del módulo
       MemorySize: 128

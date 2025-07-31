@@ -19,7 +19,7 @@
 
     <modules>
         <module>HelloWorldFunction</module>
-        <module>auth-module</module>
+        <module>login-module</module>
     </modules>
 
     <dependencyManagement>

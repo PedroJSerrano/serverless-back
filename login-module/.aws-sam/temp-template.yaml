@@ -4,8 +4,8 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 128
-      Handler: pjserrano.auth.AuthLambdaHandler::handleRequest
-      CodeUri: C:\Users\pserranc\IdeaProjects\MyServerlessApp\auth-module
+      Handler: pjserrano.auth.infrastructure.adapter.in.web.AuthLambdaHandler::handleRequest
+      CodeUri: C:\Users\pserranc\IdeaProjects\MyServerlessApp\login-module
       Runtime: java21
       Architectures:
         - x86_64

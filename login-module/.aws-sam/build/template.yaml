@@ -4,7 +4,7 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 128
-      Handler: pjserrano.auth.AuthLambdaHandler::handleRequest
+      Handler: pjserrano.auth.infrastructure.adapter.in.web.AuthLambdaHandler::handleRequest
       CodeUri: Function
       Runtime: java21
       Architectures:
