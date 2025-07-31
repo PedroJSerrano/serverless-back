@@ -21,8 +21,8 @@ public class SecurityAdapterConfig {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    // Razón: El puerto de salida ahora recibe un UserPrincipal.
-    // La lógica de la lambda se modifica para añadir los roles como un claim.
+    /* Se genera un token con los datos del usuario, incluidos los roles para
+    la securización que realizará AWS API Gateway */
     @Bean
     public TokenServicePort jwtTokenServiceAdapter() {
         return userPrincipal -> {
@@ -34,7 +34,6 @@ public class SecurityAdapterConfig {
                     .subject(userPrincipal.getUsername())
                     .issuedAt(now)
                     .expiration(expiryDate)
-                    // Razón: Se añade un claim personalizado 'roles'.
                     .claim("roles", userPrincipal.getRoles().stream().collect(Collectors.joining(",")))
                     .signWith(key)
                     .compact();

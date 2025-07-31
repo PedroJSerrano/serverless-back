@@ -29,11 +29,11 @@ class LoginUserServiceTest {
     @Mock
     private TokenServicePort mockTokenServicePort;
 
-    // El sistema bajo prueba (nuestra función de login)
+    // El sistema bajo prueba (función de login)
     private Function<UserCredentials, UserSession> loginUserUseCase;
 
-    // Razón: Este método se ejecuta antes de cada test. Aquí inicializamos
-    // nuestro caso de uso (la lambda), inyectándole los mocks.
+    /* Este method se ejecuta antes de cada test. Aquí
+    inicializamos nuestro caso de uso (la lambda), inyectándole los mocks.*/
     @BeforeEach
     void setUp() {
         LoginUserService loginUserService = new LoginUserService();
@@ -49,12 +49,12 @@ class LoginUserServiceTest {
         UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of("ROLE_USER"));
         String expectedToken = "mocked.jwt.token";
 
-        // Razón: Le decimos a nuestro mock del repositorio qué debe hacer
-        // cuando se le llame con "testuser". Debe devolver un Optional.of(userPrincipal).
+        /* Le decimos a nuestro mock del repositorio qué debe hacer
+        cuando se le llame con "testuser". Debe devolver un Optional.of(userPrincipal).*/
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
 
-        // Razón: Le decimos a nuestro mock del servicio de tokens qué debe hacer
-        // cuando se le llame con el UserPrincipal. Debe devolver nuestro token de mock.
+        /* Le decimos a nuestro mock del servicio de tokens qué debe hacer
+        cuando se le llame con el UserPrincipal. Debe devolver nuestro token de mock.*/
         when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
 
         // WHEN - Ejecutamos la acción que queremos probar
@@ -65,8 +65,8 @@ class LoginUserServiceTest {
         assertEquals(username, result.getUserId());
         assertEquals(expectedToken, result.getJwtToken());
 
-        // Razón: Verificamos que los métodos de nuestros mocks fueron llamados
-        // exactamente una vez, asegurando que la lógica siguió el camino correcto.
+        /* Verificamos que los métodos de nuestros mocks fueron llamados
+        exactamente una vez, asegurando que la lógica siguió el camino correcto.*/
         verify(mockUserRepositoryPort, times(1)).apply(username);
         verify(mockTokenServicePort, times(1)).apply(userPrincipal);
     }
@@ -95,7 +95,7 @@ class LoginUserServiceTest {
         String username = "nonexistent";
         UserCredentials credentials = new UserCredentials(username, "anypassword");
 
-        // Razón: El mock devuelve un Optional vacío, simulando que el usuario no existe
+        // El mock devuelve un Optional vacío, simulando que el usuario no existe
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.empty());
 
         // WHEN & THEN

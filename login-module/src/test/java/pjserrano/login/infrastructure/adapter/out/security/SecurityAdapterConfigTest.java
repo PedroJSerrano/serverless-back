@@ -13,7 +13,6 @@ import pjserrano.login.domain.UserPrincipal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = SecurityAdapterConfig.class)
@@ -56,7 +55,6 @@ class SecurityAdapterConfigTest {
         assertEquals("USER,ADMIN", jws.getPayload().get("roles"));
 
         // 4. Verificamos la fecha de expiración
-        long expirationMillis = 3600000L; // 1 hora
         long now = System.currentTimeMillis();
         long expiryTime = jws.getPayload().getExpiration().getTime();
         assertTrue(expiryTime > now);
