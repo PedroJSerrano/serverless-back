@@ -6,9 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import pjserrano.login.application.port.out.UserRepositoryPort;
-import pjserrano.login.domain.UserCredentials;
 import pjserrano.login.domain.UserPrincipal;
-import pjserrano.login.infrastructure.adapter.out.persistence.model.UserDbEntity;
 
 import java.util.Arrays;
 import java.util.List;
