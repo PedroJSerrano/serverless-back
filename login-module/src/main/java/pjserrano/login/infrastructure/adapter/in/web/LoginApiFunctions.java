@@ -27,7 +27,7 @@ public class LoginApiFunctions {
             UserCredentials credentials = new UserCredentials(request.getUsername(), request.getPassword());
 
             // Razón: Aquí es donde se invoca el caso de uso.
-            // No se llama a un método, sino a la función 'apply' que Spring Cloud
+            // No se llama a un method, sino a la función 'apply' que Spring Cloud
             // Function ha inyectado para nosotros, que internamente es la lambda
             // definida en LoginUserService.
             return new LoginResponse(loginUserUseCase.apply(credentials).getJwtToken());
