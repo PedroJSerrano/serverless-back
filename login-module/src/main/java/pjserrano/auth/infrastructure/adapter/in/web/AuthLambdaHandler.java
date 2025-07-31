@@ -1,4 +1,4 @@
-package pjserrano.auth;
+package pjserrano.auth.infrastructure.adapter.in.web;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
