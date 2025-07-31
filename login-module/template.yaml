@@ -9,9 +9,8 @@ Description: >
 # Define variables y configuraciones globales para las funciones Lambda
 Globals:
   Function:
-    # Runtime para Java 21, el JDK que estás usando
     Runtime: java21
-    # Memoria y Timeout para la función. Puedes ajustarlos según tus necesidades.
+    # Memoria y Timeout para la función. Se ajustan segun necesidades
     MemorySize: 512
     Timeout: 30
     # Este es el handler estándar para las funciones de Spring Cloud Function
@@ -22,12 +21,12 @@ Resources:
   LoginFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # Ruta al JAR de tu proyecto. El `sam build` lo crea en el directorio `target`
+      # Ruta al JAR. El `sam build` lo crea en el directorio `target`
       CodeUri: target/login-module.jar
       # Variables de entorno para la configuración de la función
       Environment:
         Variables:
-          # Define cuál de tus @Bean Function<...> debe ejecutar Spring Cloud Function
+          # Define cuál de los @Bean Function<...> debe ejecutar Spring Cloud Function
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           # Variables de entorno para la conexión a la base de datos
           DB_URL: "jdbc:mysql://<tu-host-rds>:3306/<nombre-db>"
@@ -38,10 +37,10 @@ Resources:
           jwt.expiration: "3600000"
       # Define las políticas de IAM para dar permisos a la función
       Policies:
-        # Esto es necesario si tu base de datos está dentro de una VPC de AWS
+        # Esto es necesario si la base de datos está dentro de una VPC de AWS
         - VPCAccessPolicy: {}
-        # NOTA: Si usas AWS Secrets Manager o Systems Manager Parameter Store,
-        # necesitarías una política de permisos para acceder a esos servicios.
+        # NOTA: Si se usa AWS Secrets Manager o Systems Manager Parameter Store,
+        # se necesitaría una política de permisos para acceder a esos servicios.
         # Por ejemplo: - AWSSecretsManagerSecretsReadPolicy: { SecretId: ... }
       # Define los eventos (triggers) que invocarán esta función.
       Events:

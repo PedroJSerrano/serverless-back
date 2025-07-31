@@ -11,9 +11,9 @@ import pjserrano.login.domain.exceptions.InvalidCredentialsException;
 @Configuration
 public class LoginUserService {
 
-    // Razón: La lógica se ajusta para trabajar con el UserPrincipal.
-    // El caso de uso es agnóstico a la base de datos; solo sabe que recibe
-    // un UserPrincipal del UserRepositoryPort.
+    /* La lógica se ajusta para trabajar con el UserPrincipal.
+    El caso de uso es agnóstico a la base de datos; solo sabe que recibe
+    un UserPrincipal del UserRepositoryPort.*/
     @Bean
     public LoginUserUseCase loginUser(UserRepositoryPort userRepository, TokenServicePort tokenService) {
 
