@@ -1,24 +1,60 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Auth Module Serverless Application
+Description: >
+  MyServerlessApp - Login Module
 
+  This template defines the login module implemented as an AWS Lambda function 
+  with Spring Cloud Function. It exposes a single API endpoint via API Gateway.
+
+# Define variables y configuraciones globales para las funciones Lambda
 Globals:
   Function:
-    Timeout: 30 # Default timeout for all functions
+    # Runtime para Java 21, el JDK que estás usando
+    Runtime: java21
+    # Memoria y Timeout para la función. Puedes ajustarlos según tus necesidades.
+    MemorySize: 512
+    Timeout: 30
+    # Este es el handler estándar para las funciones de Spring Cloud Function
+    Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
 
 Resources:
-  AuthLambdaFunction:
+  # Define el recurso de la función Lambda para el login
+  LoginFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.pjserrano.auth.infrastructure.adapter.in.web.LoginApiFunctions::handleRequest # ¡MUY IMPORTANTE! Tu Handler
-      Runtime: java21
-      CodeUri: auth-module # Esto apunta a la carpeta del módulo
-      MemorySize: 128
-      Architectures:
-        - x86_64
+      # Ruta al JAR de tu proyecto. El `sam build` lo crea en el directorio `target`
+      CodeUri: target/login-module.jar
+      # Variables de entorno para la configuración de la función
+      Environment:
+        Variables:
+          # Define cuál de tus @Bean Function<...> debe ejecutar Spring Cloud Function
+          SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
+          # Variables de entorno para la conexión a la base de datos
+          DB_URL: "jdbc:mysql://<tu-host-rds>:3306/<nombre-db>"
+          DB_USER: "<tu-usuario-db>"
+          DB_PASSWORD: "<tu-contraseña-db>"
+          # Variables de entorno para la lógica de seguridad del token
+          jwt.secret: "<un-secreto-muy-largo>"
+          jwt.expiration: "3600000"
+      # Define las políticas de IAM para dar permisos a la función
+      Policies:
+        # Esto es necesario si tu base de datos está dentro de una VPC de AWS
+        - VPCAccessPolicy: {}
+        # NOTA: Si usas AWS Secrets Manager o Systems Manager Parameter Store,
+        # necesitarías una política de permisos para acceder a esos servicios.
+        # Por ejemplo: - AWSSecretsManagerSecretsReadPolicy: { SecretId: ... }
+      # Define los eventos (triggers) que invocarán esta función.
       Events:
-        AuthApi:
-          Type: Api
+        # Define un endpoint de API Gateway para el path /login
+        LoginApi:
+          Type: HttpApi
           Properties:
-            Path: /auth/login # La ruta para tu Lambda de login
-            Method: post
+            # Los métodos y la ruta a la que responde la función
+            Path: /login
+            Method: POST
+
+Outputs:
+  # Muestra el endpoint de la API Gateway tras el despliegue
+  LoginApiUrl:
+    Description: "API Gateway endpoint URL for Login Function"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/login"

@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-
 @Configuration
 @RequiredArgsConstructor
 public class JdbcUserRepositoryAdapter {
