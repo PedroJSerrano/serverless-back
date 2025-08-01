@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 @Configuration
 @RequiredArgsConstructor
-public class DynamoDBUserRepositoryAdapter {
+public class DynamoDbUserRepositoryAdapter {
 
     private final DynamoDbEnhancedClient enhancedClient;
     Logger logger = Logger.getLogger(getClass().getName());
@@ -28,7 +28,7 @@ public class DynamoDBUserRepositoryAdapter {
     }
 
     @Bean
-    public UserRepositoryPort dynamoDBUserRepositoryAdapter() {
+    public UserRepositoryPort userRepositoryPort() {
         DynamoDbTable<UserDynamoEntity> userTable = userTable();
 
         // Retornamos directamente la función (lambda) que implementa el puerto
