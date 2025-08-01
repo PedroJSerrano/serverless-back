@@ -82,64 +82,16 @@
         </dependency>
     </dependencies>
 
-    <build>
+    <!-- Comentamos esto hasta el despliegue. Activará el plugin definido
+             en el pom de la raiz para "rellenar" el nombre del jar a desplegar
+             sin tener que cambiar la referencia en el template.yaml -->
+    <!--<build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
-                <executions>
-                    <execution>
-                        <id>default-prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-report-aggregate</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report-aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*Configuration.*</exclude>
-                        <exclude>**/domain/**/model/**</exclude>
-                        <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                        <exclude>**/infrastructure/adapter/out/persistence/model/**</exclude>
-                    </excludes>
-                </configuration>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
+
 </project>

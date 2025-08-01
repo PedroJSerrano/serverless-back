@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,7 +18,7 @@ public class UserDynamoEntity {
 
     private String username;
     private String password;
-    private Set<String> roles;
+    private List<String> roles;
 
     @DynamoDbPartitionKey
     public String getUsername() {
