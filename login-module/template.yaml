@@ -9,6 +9,9 @@ Globals:
     MemorySize: 512
     Timeout: 30
     Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+    # Configuración de SnapStart: activa SnapStart para todas las funciones
+    SnapStart:
+      ApplyOn: PublishedVersions
 
 Resources:
   # Define la tabla de DynamoDB
@@ -38,14 +41,15 @@ Resources:
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           # Inyecta el secreto como variable de entorno desde Parameter Store
           # ¡Asume que este parámetro ya existe en AWS!
-          jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
+          # jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
+          jwt.secret: ""
           jwt.expiration: "3600000"
       Policies:
         # Permisos a la Lambda para leer el parámetro
         - SSMParameterReadPolicy:
             ParameterName: "/login/jwt/secret"
         # Permisos de lectura a la tabla de DynamoDB
-        - DynamoDBReadPolicy:
+        - DynamoDBCrudPolicy:
             TableName: !Ref LoginUsersTable
       Events:
         LoginApi:
