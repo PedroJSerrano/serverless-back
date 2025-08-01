@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @SpringBootTest(classes = {DynamoDbConfig.class})
-@Import(DynamoDBUserRepositoryAdapter.class)
-class DynamoDBUserRepositoryAdapterTest {
+@Import(DynamoDbUserRepositoryAdapter.class)
+class DynamoDbUserRepositoryAdapterTest {
 
     private static final DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse("localstack/localstack:latest");
 

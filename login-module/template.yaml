@@ -35,18 +35,23 @@ Resources:
       # sam build para el despliegue, y SAM llame a maven para el build del modulo, inyecte el nombre
       # correcto del jar
       # CodeUri: target/${CodeUriJarName}
-      CodeUri: target/login-1.0.0.jar
+      CodeUri: .
+      Architectures:
+        - x86_64
       Environment:
         Variables:
+          MAIN_CLASS: pjserrano.login.LoginApplication
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
-          # Inyecta el secreto como variable de entorno desde Parameter Store
-          # ¡Asume que este parámetro ya existe en AWS!
-          jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
-          jwt.expiration: "3600000"
+          JWT_EXPIRATION: "3600000"
+          MY_AWS_REGION: eu-west-1
       Policies:
-        # Permisos a la Lambda para leer el parámetro
-        - SSMParameterReadPolicy:
-            ParameterName: "/login/jwt/secret"
+        # Define una política de IAM explícita para leer el parámetro de SSM
+        - Statement:
+            - Sid: SSMGetParameterPolicy
+              Effect: Allow
+              Action:
+                - "ssm:GetParameter"
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/login/jwt/secret"
         # Permisos de lectura a la tabla de DynamoDB
         - DynamoDBCrudPolicy:
             TableName: !Ref LoginUsersTable
