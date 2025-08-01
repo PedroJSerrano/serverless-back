@@ -41,8 +41,7 @@ Resources:
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           # Inyecta el secreto como variable de entorno desde Parameter Store
           # ¡Asume que este parámetro ya existe en AWS!
-          # jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
-          jwt.secret: ""
+          jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
           jwt.expiration: "3600000"
       Policies:
         # Permisos a la Lambda para leer el parámetro
