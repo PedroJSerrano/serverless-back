@@ -28,7 +28,11 @@ Resources:
   LoginFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/login-module.jar
+      # Esto cambiará más adelante para referenciar a una variable de maven, de forma que al ejecutar
+      # sam build para el despliegue, y SAM llame a maven para el build del modulo, inyecte el nombre
+      # correcto del jar
+      # CodeUri: target/${CodeUriJarName}
+      CodeUri: target/login-1.0.0.jar
       Environment:
         Variables:
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
