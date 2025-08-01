@@ -1,59 +1,60 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  MyServerlessApp - Login Module
+  MyServerlessApp - Login Module using an existing secret from Parameter Store.
 
-  This template defines the login module implemented as an AWS Lambda function 
-  with Spring Cloud Function. It exposes a single API endpoint via API Gateway.
-
-# Define variables y configuraciones globales para las funciones Lambda
 Globals:
   Function:
     Runtime: java21
-    # Memoria y Timeout para la función. Se ajustan segun necesidades
     MemorySize: 512
     Timeout: 30
-    # Este es el handler estándar para las funciones de Spring Cloud Function
     Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
 
 Resources:
-  # Define el recurso de la función Lambda para el login
+  # Define la tabla de DynamoDB
+  LoginUsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: users
+      AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: username
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  # Define la función Lambda
   LoginFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # Ruta al JAR. El `sam build` lo crea en el directorio `target`
       CodeUri: target/login-module.jar
-      # Variables de entorno para la configuración de la función
       Environment:
         Variables:
-          # Define cuál de los @Bean Function<...> debe ejecutar Spring Cloud Function
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
-          # Variables de entorno para la conexión a la base de datos
-          DB_URL: "jdbc:mysql://<tu-host-rds>:3306/<nombre-db>"
-          DB_USER: "<tu-usuario-db>"
-          DB_PASSWORD: "<tu-contraseña-db>"
-          # Variables de entorno para la lógica de seguridad del token
-          jwt.secret: "<un-secreto-muy-largo>"
+          # Inyecta el secreto como variable de entorno desde Parameter Store
+          # ¡Asume que este parámetro ya existe en AWS!
+          jwt.secret: "{{resolve:ssm:/login/jwt/secret}}"
           jwt.expiration: "3600000"
-      # Define las políticas de IAM para dar permisos a la función
       Policies:
-        # Esto es necesario si la base de datos está dentro de una VPC de AWS
-        - VPCAccessPolicy: {}
-        # NOTA: Si se usa AWS Secrets Manager o Systems Manager Parameter Store,
-        # se necesitaría una política de permisos para acceder a esos servicios.
-        # Por ejemplo: - AWSSecretsManagerSecretsReadPolicy: { SecretId: ... }
-      # Define los eventos (triggers) que invocarán esta función.
+        # Permisos a la Lambda para leer el parámetro
+        - SSMParameterReadPolicy:
+            ParameterName: "/login/jwt/secret"
+        # Permisos de lectura a la tabla de DynamoDB
+        - DynamoDBReadPolicy:
+            TableName: !Ref LoginUsersTable
       Events:
-        # Define un endpoint de API Gateway para el path /login
         LoginApi:
           Type: HttpApi
           Properties:
-            # Los métodos y la ruta a la que responde la función
             Path: /login
             Method: POST
 
 Outputs:
-  # Muestra el endpoint de la API Gateway tras el despliegue
   LoginApiUrl:
     Description: "API Gateway endpoint URL for Login Function"
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/login"
+
+  LoginUsersTableArn:
+    Description: "ARN of the DynamoDB users table"
+    Value: !GetAtt LoginUsersTable.Arn

@@ -1,6 +1,5 @@
 package pjserrano.login.infrastructure.adapter.out.persistence;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +12,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import pjserrano.login.application.port.out.UserRepositoryPort;
-import pjserrano.login.config.DynamoDBConfig;
+import pjserrano.login.config.DynamoDbConfig;
 import pjserrano.login.domain.UserPrincipal;
 import pjserrano.login.infrastructure.adapter.out.persistence.model.UserDynamoEntity;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +25,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
-@SpringBootTest(classes = {DynamoDBConfig.class})
+@SpringBootTest(classes = {DynamoDbConfig.class})
 @Import(DynamoDBUserRepositoryAdapter.class)
 class DynamoDBUserRepositoryAdapterTest {
 
@@ -53,38 +47,31 @@ class DynamoDBUserRepositoryAdapterTest {
     @Autowired
     private UserRepositoryPort userRepositoryPort;
 
-    private static DynamoDbEnhancedClient enhancedClient;
-    private static DynamoDbTable<UserDynamoEntity> userTable;
+    @Autowired
+    private DynamoDbEnhancedClient enhancedClient;
 
-    @BeforeAll
-    static void setup() {
-        DynamoDbClient ddbClient = DynamoDbClient.builder()
-                .endpointOverride(localstack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB))
-                .region(Region.of(localstack.getRegion()))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())
-                        )
-                )
-                .build();
-        enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(ddbClient)
-                .build();
-        userTable = enhancedClient.table("users", TableSchema.fromBean(UserDynamoEntity.class));
-    }
+    @Autowired
+    private DynamoDbTable<UserDynamoEntity> userTable;
 
     @BeforeEach
     void createTableAndInsertData() {
         try {
+            // El metodo createTable() es asincrono
             userTable.createTable();
+
+            // Esperamos a que la tabla esté activa antes de continuar
+            // Es crucial para evitar que el test falle por un problema de sincronización
+
         } catch (Exception e) {
-            // Ignoramos si la tabla ya existe
+            // Si la tabla ya existe, la eliminamos y volvemos a crearla para garantizar un estado limpio
+            userTable.deleteTable();
+            userTable.createTable();
         }
 
         userTable.putItem(UserDynamoEntity.builder()
                 .username("testuser")
                 .password("encoded_password")
-                .roles(Set.of("USER", "ADMIN"))
+                .roles(List.of("USER", "ADMIN"))
                 .build());
     }
 

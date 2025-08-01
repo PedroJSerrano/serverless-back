@@ -23,9 +23,13 @@ public class DynamoDBUserRepositoryAdapter {
     Logger logger = Logger.getLogger(getClass().getName());
 
     @Bean
+    public DynamoDbTable<UserDynamoEntity> userTable() {
+        return enhancedClient.table("users", TableSchema.fromBean(UserDynamoEntity.class));
+    }
+
+    @Bean
     public UserRepositoryPort dynamoDBUserRepositoryAdapter() {
-        DynamoDbTable<UserDynamoEntity> userTable =
-                enhancedClient.table("users", TableSchema.fromBean(UserDynamoEntity.class));
+        DynamoDbTable<UserDynamoEntity> userTable = userTable();
 
         // Retornamos directamente la función (lambda) que implementa el puerto
         return username -> {
