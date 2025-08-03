@@ -2,92 +2,118 @@ package pjserrano.login.infrastructure.adapter.out.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pjserrano.login.application.port.out.UserRepositoryPort;
-import pjserrano.login.config.DynamoDbConfig;
 import pjserrano.login.domain.UserPrincipal;
 import pjserrano.login.infrastructure.adapter.out.persistence.model.UserDynamoEntity;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-@Testcontainers
-@SpringBootTest(classes = {DynamoDbConfig.class})
-@Import(DynamoDbUserRepositoryAdapter.class)
+/**
+ * Test unitario para DynamoDbUserRepositoryAdapter.
+ * Usa mocks para testear solo la lógica del adaptador.
+ */
+@ExtendWith(MockitoExtension.class)
 class DynamoDbUserRepositoryAdapterTest {
 
-    private static final DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse("localstack/localstack:latest");
+    @Mock
+    private DynamoDbEnhancedClient mockEnhancedClient;
 
-    @Container
-    public static LocalStackContainer localstack =
-            new LocalStackContainer(LOCALSTACK_IMAGE)
-                    .withServices(LocalStackContainer.Service.DYNAMODB);
+    @Mock
+    private DynamoDbTable<UserDynamoEntity> mockUserTable;
 
-    @DynamicPropertySource
-    static void registerDynamoDbProperties(DynamicPropertyRegistry registry) {
-        registry.add("aws.dynamodb.endpoint", () -> localstack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB).toString());
-        registry.add("aws.region", () -> localstack.getRegion());
-        registry.add("aws.accessKeyId", () -> localstack.getAccessKey());
-        registry.add("aws.secretAccessKey", () -> localstack.getSecretKey());
-    }
-
-    @Autowired
+    private DynamoDbUserRepositoryAdapter adapter;
     private UserRepositoryPort userRepositoryPort;
 
-    @Autowired
-    private DynamoDbEnhancedClient enhancedClient;
-
-    @Autowired
-    private DynamoDbTable<UserDynamoEntity> userTable;
-
     @BeforeEach
-    void createTableAndInsertData() {
-        try {
-            // El metodo createTable() es asincrono
-            userTable.createTable();
-
-            // Esperamos a que la tabla esté activa antes de continuar
-            // Es crucial para evitar que el test falle por un problema de sincronización
-
-        } catch (Exception e) {
-            // Si la tabla ya existe, la eliminamos y volvemos a crearla para garantizar un estado limpio
-            userTable.deleteTable();
-            userTable.createTable();
-        }
-
-        userTable.putItem(UserDynamoEntity.builder()
-                .username("testuser")
-                .password("encoded_password")
-                .roles(List.of("USER", "ADMIN"))
-                .build());
+    void setUp() {
+        adapter = new DynamoDbUserRepositoryAdapter(mockEnhancedClient);
+        
+        // Configurar el mock para que devuelva la tabla mockeada (cast necesario para tipos genéricos)
+        when(mockEnhancedClient.table(any(String.class), any())).thenReturn((DynamoDbTable) mockUserTable);
+        
+        // Obtener el puerto configurado por el adaptador
+        userRepositoryPort = adapter.userRepositoryPort();
     }
 
     @Test
     void whenUserExists_thenReturnsUserWithCorrectRoles() {
-        Optional<UserPrincipal> result = userRepositoryPort.apply("testuser");
+        // GIVEN
+        String username = "testuser";
+        UserDynamoEntity mockEntity = UserDynamoEntity.builder()
+                .username(username)
+                .password("encoded_password")
+                .roles(List.of("USER", "ADMIN"))
+                .build();
 
-        assertTrue(result.isPresent());
+        when(mockUserTable.getItem(any(Key.class))).thenReturn(mockEntity);
+
+        // WHEN
+        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+
+        // THEN
+        assertTrue(result.isPresent(), "User should be found");
         UserPrincipal user = result.get();
-        assertEquals("testuser", user.getUsername());
+        assertEquals(username, user.getUsername());
         assertEquals("encoded_password", user.getPassword());
         assertIterableEquals(List.of("USER", "ADMIN"), user.getRoles());
     }
 
     @Test
     void whenUserDoesNotExist_thenReturnsEmptyOptional() {
-        Optional<UserPrincipal> result = userRepositoryPort.apply("nonexistentuser");
-        assertFalse(result.isPresent());
+        // GIVEN
+        String username = "nonexistentuser";
+        when(mockUserTable.getItem(any(Key.class))).thenReturn(null);
+
+        // WHEN
+        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+
+        // THEN
+        assertFalse(result.isPresent(), "Non-existent user should return empty");
+    }
+
+    @Test
+    void whenUserHasNoRoles_thenReturnsEmptyRolesList() {
+        // GIVEN
+        String username = "noroleuser";
+        UserDynamoEntity mockEntity = UserDynamoEntity.builder()
+                .username(username)
+                .password("password")
+                .roles(null) // Sin roles
+                .build();
+
+        when(mockUserTable.getItem(any(Key.class))).thenReturn(mockEntity);
+
+        // WHEN
+        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+
+        // THEN
+        assertTrue(result.isPresent(), "User without roles should be found");
+        UserPrincipal user = result.get();
+        assertEquals(username, user.getUsername());
+        assertTrue(user.getRoles().isEmpty(), "Roles should be empty list, not null");
+    }
+
+    @Test
+    void whenDynamoDbThrowsException_thenReturnsEmptyOptional() {
+        // GIVEN
+        String username = "erroruser";
+        when(mockUserTable.getItem(any(Key.class))).thenThrow(new RuntimeException("DynamoDB error"));
+
+        // WHEN
+        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+
+        // THEN
+        assertFalse(result.isPresent(), "Should return empty when DynamoDB fails");
     }
 }

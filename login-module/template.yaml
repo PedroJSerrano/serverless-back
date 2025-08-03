@@ -43,7 +43,8 @@ Resources:
           MAIN_CLASS: pjserrano.login.LoginApplication
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           JWT_EXPIRATION: "3600000"
-          MY_AWS_REGION: eu-west-1
+          # Opcional: Configuración explícita de Spring Cloud AWS
+          SPRING_CLOUD_AWS_REGION_STATIC: !Ref AWS::Region
       Policies:
         # Define una política de IAM explícita para leer el parámetro de SSM
         - Statement:
@@ -52,9 +53,13 @@ Resources:
               Action:
                 - "ssm:GetParameter"
               Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/login/jwt/secret"
-        # Permisos de lectura a la tabla de DynamoDB
-        - DynamoDBCrudPolicy:
-            TableName: !Ref LoginUsersTable
+        # Permisos de solo lectura a la tabla de DynamoDB (principio de menor privilegio)
+        - Statement:
+            - Sid: DynamoDBReadOnlyPolicy
+              Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+              Resource: !GetAtt LoginUsersTable.Arn
       Events:
         LoginApi:
           Type: HttpApi

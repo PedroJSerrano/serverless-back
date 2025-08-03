@@ -58,6 +58,11 @@
                                                 <value>COVEREDRATIO</value>
                                                 <minimum>0.70</minimum>
                                             </limit>
+                                            <limit>
+                                                <counter>METHOD</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.70</minimum>
+                                            </limit>
                                         </limits>
                                     </rule>
                                 </rules>
