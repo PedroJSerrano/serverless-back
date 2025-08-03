@@ -10,7 +10,9 @@ Aplicación serverless modular desarrollada con **Java 21** y **arquitectura hex
 - **DynamoDB** para persistencia
 - **API Gateway** para endpoints HTTP
 - **AWS Systems Manager** para gestión de secretos
-- **JaCoCo** para cobertura de tests (70%)
+- **Spring Cloud AWS** para integración simplificada con AWS
+- **JaCoCo** para cobertura de tests (>90%)
+- **TestContainers** + **LocalStack** para tests de integración
 
 ## Módulos
 
@@ -26,6 +28,8 @@ Módulo de gestión de usuarios que incluye:
 - Actualización de datos de usuario
 - Eliminación de usuarios
 
+⚠️ **En desarrollo** - Este módulo está actualmente en construcción.
+
 ## Arquitectura
 
 Cada módulo implementa **arquitectura hexagonal**:
@@ -33,24 +37,22 @@ Cada módulo implementa **arquitectura hexagonal**:
 - **Application** - Casos de uso y servicios
 - **Infrastructure** - Adaptadores (web, persistencia, externos)
 
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+## Herramientas de Desarrollo
 
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+Si prefieres usar un entorno de desarrollo integrado (IDE) para construir y probar tu aplicación, puedes usar el AWS Toolkit. El AWS Toolkit es un plugin de código abierto para IDEs populares que usa SAM CLI para construir y desplegar aplicaciones serverless en AWS. También añade una experiencia simplificada de depuración paso a paso para el código de funciones Lambda.
+
+**IDEs compatibles:**
+* [IntelliJ IDEA](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html) (recomendado)
 * [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
+* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
 * [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
-## Deploy the sample application
+## Despliegue de la Aplicación
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+El Serverless Application Model Command Line Interface (SAM CLI) es una extensión del AWS CLI que añade funcionalidad para construir y probar aplicaciones Lambda. Usa Docker para ejecutar tus funciones en un entorno Amazon Linux que coincide con Lambda. También puede emular el entorno de construcción y API de tu aplicación.
+
+### Prerrequisitos
 
 Para usar SAM CLI necesitas las siguientes herramientas:
 
@@ -77,17 +79,20 @@ mvn verify
 ```
 
 ### Desplegar módulos
-Ver README específico de cada módulo para instrucciones detalladas de despliegue.
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+Cada módulo se despliega independientemente. Ver README específico de cada módulo para instrucciones detalladas.
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+#### Proceso de Despliegue
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+El primer comando construirá el código fuente de tu aplicación. El segundo comando empaquetará y desplegará tu aplicación en AWS, con una serie de preguntas:
+
+* **Stack Name**: El nombre del stack para desplegar en CloudFormation. Debe ser único en tu cuenta y región.
+* **AWS Region**: La región AWS donde quieres desplegar tu aplicación.
+* **Confirm changes before deploy**: Si se establece en sí, cualquier conjunto de cambios se mostrará antes de la ejecución para revisión manual.
+* **Allow SAM CLI IAM role creation**: Muchas plantillas de AWS SAM crean roles IAM requeridos para que las funciones Lambda accedan a servicios AWS.
+* **Save arguments to samconfig.toml**: Si se establece en sí, tus opciones se guardarán en un archivo de configuración.
+
+Puedes encontrar la URL del endpoint de API Gateway en los valores de salida mostrados después del despliegue.
 
 ## Desarrollo Local
 
@@ -97,48 +102,58 @@ Cada módulo se puede desarrollar y probar independientemente. Consulta el READM
 - Testing de APIs
 - Variables de entorno específicas
 
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
+SAM CLI lee la plantilla de aplicación para determinar las rutas de la API y las funciones que invocan. La propiedad `Events` en la definición de cada función incluye la ruta y método para cada path.
 
+**Ejemplo de configuración de evento:**
 ```yaml
       Events:
-        HelloWorld:
-          Type: Api
+        LoginApi:
+          Type: HttpApi
           Properties:
-            Path: /hello
-            Method: get
+            Path: /login
+            Method: POST
 ```
 
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
+## Añadir Recursos a tu Aplicación
 
-## Fetch, tail, and filter Lambda function logs
+La plantilla de aplicación usa AWS Serverless Application Model (AWS SAM) para definir recursos de aplicación. AWS SAM es una extensión de AWS CloudFormation con una sintaxis más simple para configurar recursos comunes de aplicaciones serverless como funciones, triggers y APIs.
 
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
+Para recursos no incluidos en [la especificación SAM](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), puedes usar tipos de recursos estándar de [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html).
 
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
+## Obtener y Filtrar Logs de Funciones Lambda
+
+Para simplificar la resolución de problemas, SAM CLI tiene un comando llamado `sam logs`. Este comando te permite obtener logs generados por tu función Lambda desplegada desde la línea de comandos.
+
+**Nota**: Este comando funciona para todas las funciones AWS Lambda, no solo las que despliegas usando SAM.
 
 ```bash
-MyServerlessApp$ sam logs -n HelloWorldFunction --stack-name MyServerlessApp --tail
+# Obtener logs en tiempo real
+sam logs -n LoginFunction --stack-name login-module --tail
+
+# Obtener logs de un período específico
+sam logs -n LoginFunction --stack-name login-module --start-time '10min ago'
 ```
 
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
+Puedes encontrar más información y ejemplos sobre filtrado de logs de funciones Lambda en la [Documentación de SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
 ## Estructura del Proyecto
 
 ```
 MyServerlessApp/
-├── login-module/           # Módulo de autenticación
+├── login-module/           # Módulo de autenticación (✅ Completo)
+│   ├── src/
+│   │   ├── main/java/      # Código fuente
+│   │   └── test/java/      # Tests (>90% cobertura)
+│   ├── template.yaml       # Plantilla SAM
+│   ├── pom.xml            # Configuración Maven
+│   └── README.md          # Documentación del módulo
+├── user-management-module/ # Módulo de gestión de usuarios (🚧 En desarrollo)
 │   ├── src/
 │   ├── template.yaml
 │   ├── pom.xml
 │   └── README.md
-├── user-management-module/ # Módulo de gestión de usuarios
-│   ├── src/
-│   ├── template.yaml
-│   ├── pom.xml
-│   └── README.md
-├── events/                 # Eventos de prueba
-├── pom.xml                # POM padre
+├── events/                 # Eventos de prueba para testing local
+├── pom.xml                # POM padre con configuración común
 └── README.md              # Este archivo
 ```
 
@@ -151,8 +166,21 @@ cd login-module && sam delete
 cd ../user-management-module && sam delete
 ```
 
-## Resources
+## Calidad del Código
 
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
+### Cobertura de Tests
+El proyecto mantiene una cobertura de tests superior al 90% en todas las métricas:
+- **Cobertura de líneas**: >90%
+- **Cobertura de métodos**: >90%
+- **Cobertura de ramas**: >90%
 
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+### Tipos de Tests
+- **Tests Unitarios**: Verifican lógica de negocio con mocks
+- **Tests de Integración**: Verifican integración con servicios AWS usando LocalStack
+- **Tests de Producción**: Verifican configuración con servicios AWS reales
+
+## Recursos Adicionales
+
+Consulta la [guía de desarrollador de AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) para una introducción a la especificación SAM, SAM CLI y conceptos de aplicaciones serverless.
+
+También puedes usar AWS Serverless Application Repository para desplegar aplicaciones listas para usar: [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/)
