@@ -1,38 +1,32 @@
 package pjserrano.login.infrastructure.adapter.out.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pjserrano.login.application.port.out.JwtSecretProviderPort;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
+import software.amazon.awssdk.services.ssm.model.Parameter;
+
+import java.util.Optional;
 
 @Configuration
+@RequiredArgsConstructor
 public class SsmJwtSecretProviderAdapter {
 
-    @Value("${MY_AWS_REGION}")
-    private String awsRegion;
+    private final SsmClient ssmClient; // Inyectado automáticamente por Spring Cloud AWS
 
     @Bean
     public JwtSecretProviderPort jwtSecretProvider() {
-        SsmClient ssmClient = SsmClient.builder()
-                .region(Region.of(awsRegion))
+        GetParameterRequest request = GetParameterRequest.builder()
+                .name("/login/jwt/secret")
+                .withDecryption(true) // Crucial para SecureString
                 .build();
-        return () -> {
-            try {
-                GetParameterRequest parameterRequest = GetParameterRequest.builder()
-                        .name("/login/jwt/secret")
-                        .withDecryption(true) // Crucial para SecureString
-                        .build();
-
-                GetParameterResponse parameterResponse = ssmClient.getParameter(parameterRequest);
-                return parameterResponse.parameter().value();
-            } catch (Exception e) {
-                System.err.println("Error al obtener el secreto JWT desde SSM: " + e.getMessage());
-                throw new RuntimeException("No se pudo obtener el secreto JWT", e);
-            }
-        };
+                
+        return () -> Optional.ofNullable(ssmClient.getParameter(request))
+                            .map(GetParameterResponse::parameter)
+                            .map(Parameter::value)
+                            .orElseThrow(() -> new RuntimeException("No se pudo obtener el secreto JWT"));
     }
 }

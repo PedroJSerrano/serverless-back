@@ -35,11 +35,12 @@ class DynamoDbConfigTest {
 
         @DynamicPropertySource
         static void registerDynamoDbProperties(DynamicPropertyRegistry registry) {
-            registry.add("aws.dynamodb.endpoint", () -> localstack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB).toString());
-            registry.add("aws.region", () -> localstack.getRegion());
-            registry.add("aws.accessKeyId", () -> localstack.getAccessKey());
-            registry.add("aws.secretAccessKey", () -> localstack.getSecretKey());
-            logger.info("LocalStack properties injected into Spring context.");
+            // Propiedades estándar de Spring Cloud AWS
+            registry.add("spring.cloud.aws.dynamodb.endpoint", () -> localstack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB).toString());
+            registry.add("spring.cloud.aws.region.static", () -> localstack.getRegion());
+            registry.add("spring.cloud.aws.credentials.access-key", () -> localstack.getAccessKey());
+            registry.add("spring.cloud.aws.credentials.secret-key", () -> localstack.getSecretKey());
+            logger.info("Spring Cloud AWS properties injected for LocalStack.");
         }
 
         @Autowired
@@ -49,14 +50,15 @@ class DynamoDbConfigTest {
         private DynamoDbEnhancedClient dynamoDbEnhancedClient;
 
         @Test
-        void contextLoadsAndClientsAreConfiguredForLocalStack() {
-            assertNotNull(dynamoDbClient);
-            assertNotNull(dynamoDbEnhancedClient);
+        void contextLoadsAndClientsAreAutoConfiguredForLocalStack() {
+            assertNotNull(dynamoDbClient, "DynamoDbClient should be auto-configured by Spring Cloud AWS");
+            assertNotNull(dynamoDbEnhancedClient, "DynamoDbEnhancedClient should be auto-configured by Spring Cloud AWS");
+            logger.info("LocalStack test passed - clients auto-configured successfully");
         }
     }
 
     @Nested
-    @SpringBootTest(classes = DynamoDbConfig.class) // Se han eliminado las propiedades para que Spring inyecte 'null'
+    @SpringBootTest(classes = DynamoDbConfig.class)
     class ProductionTest {
 
         @Autowired
@@ -66,9 +68,10 @@ class DynamoDbConfigTest {
         private DynamoDbEnhancedClient dynamoDbEnhancedClient;
 
         @Test
-        void contextLoadsAndClientsAreConfiguredForProductionDefaults() {
-            assertNotNull(dynamoDbClient);
-            assertNotNull(dynamoDbEnhancedClient);
+        void contextLoadsAndClientsAreAutoConfiguredForProduction() {
+            assertNotNull(dynamoDbClient, "DynamoDbClient should be auto-configured by Spring Cloud AWS");
+            assertNotNull(dynamoDbEnhancedClient, "DynamoDbEnhancedClient should be auto-configured by Spring Cloud AWS");
+            logger.info("Production test passed - clients auto-configured with default AWS settings");
         }
     }
 }
