@@ -18,7 +18,7 @@ public class LoginApiFunctions {
 
     /* Este es el punto de entrada de la Lambda de Spring Cloud Function.
     El tipo de retorno es Function<LoginRequest, LoginResponse>, que es la firma
-    esperada por el adaptador de AWS. El nombre 'loginFunction' es lo que usarás
+    esperada por el adaptador de AWS. El nombre 'loginFunction' es lo que se usará
     en la variable de entorno de Lambda (SPRING_CLOUD_FUNCTION_DEFINITION=loginFunction).*/
     @Bean
     public Function<LoginRequest, LoginResponse> loginFunction() {
