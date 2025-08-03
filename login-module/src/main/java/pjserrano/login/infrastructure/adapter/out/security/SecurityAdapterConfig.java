@@ -11,7 +11,6 @@ import pjserrano.login.application.port.out.TokenServicePort;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityAdapterConfig {

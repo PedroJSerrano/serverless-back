@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pjserrano.login.application.port.in.LoginUserUseCase;
 import pjserrano.login.application.port.out.TokenServicePort;
 import pjserrano.login.application.port.out.UserRepositoryPort;
 import pjserrano.login.domain.UserCredentials;
@@ -14,13 +15,16 @@ import pjserrano.login.domain.exceptions.InvalidCredentialsException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita Mockito para los tests de JUnit 5
-class LoginUserServiceTest {
+/**
+ * Tests unitarios con mocks para verificar la lógica de negocio.
+ * Prueban el comportamiento del servicio de forma aislada.
+ */
+@ExtendWith(MockitoExtension.class)
+class LoginUserServiceUnitTest {
 
     // Dependencias de nuestro caso de uso, las vamos a mockear
     @Mock
@@ -30,7 +34,7 @@ class LoginUserServiceTest {
     private TokenServicePort mockTokenServicePort;
 
     // El sistema bajo prueba (función de login)
-    private Function<UserCredentials, UserSession> loginUserUseCase;
+    private LoginUserUseCase loginUserUseCase;
 
     /* Este method se ejecuta antes de cada test. Aquí
     inicializamos nuestro caso de uso (la lambda), inyectándole los mocks.*/
@@ -40,6 +44,7 @@ class LoginUserServiceTest {
         this.loginUserUseCase = loginUserService.loginUser(mockUserRepositoryPort, mockTokenServicePort);
     }
 
+    // Verifica el flujo exitoso de autenticación con credenciales válidas
     @Test
     void whenValidCredentials_thenShouldReturnUserSessionWithToken() {
         // GIVEN - Preparamos el escenario
@@ -71,6 +76,7 @@ class LoginUserServiceTest {
         verify(mockTokenServicePort, times(1)).apply(userPrincipal);
     }
 
+    // Verifica que se lanza excepción cuando la contraseña es incorrecta
     @Test
     void whenInvalidPassword_thenShouldThrowException() {
         // GIVEN
@@ -89,6 +95,7 @@ class LoginUserServiceTest {
         verify(mockTokenServicePort, never()).apply(any());
     }
 
+    // Verifica que se lanza excepción cuando el usuario no existe
     @Test
     void whenUserNotFound_thenShouldThrowException() {
         // GIVEN
@@ -100,5 +107,59 @@ class LoginUserServiceTest {
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginUserUseCase.apply(credentials));
+        
+        // Verificamos que el tokenService no fue llamado
+        verify(mockTokenServicePort, never()).apply(any());
+    }
+
+    // Verifica que se manejan correctamente las credenciales nulas
+    @Test
+    void whenNullCredentials_thenShouldThrowException() {
+        // WHEN & THEN
+        assertThrows(NullPointerException.class, () -> loginUserUseCase.apply(null));
+    }
+
+    // Verifica que se manejan correctamente los usuarios con roles múltiples
+    @Test
+    void whenUserWithMultipleRoles_thenShouldReturnValidSession() {
+        // GIVEN
+        String username = "adminuser";
+        String password = "adminpass";
+        UserCredentials credentials = new UserCredentials(username, password);
+        UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of("ROLE_USER", "ROLE_ADMIN"));
+        String expectedToken = "admin.jwt.token";
+
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
+        when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
+
+        // WHEN
+        UserSession result = loginUserUseCase.apply(credentials);
+
+        // THEN
+        assertNotNull(result);
+        assertEquals(username, result.getUserId());
+        assertEquals(expectedToken, result.getJwtToken());
+    }
+
+    // Verifica que se manejan correctamente los usuarios sin roles
+    @Test
+    void whenUserWithNoRoles_thenShouldReturnValidSession() {
+        // GIVEN
+        String username = "basicuser";
+        String password = "basicpass";
+        UserCredentials credentials = new UserCredentials(username, password);
+        UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of());
+        String expectedToken = "basic.jwt.token";
+
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
+        when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
+
+        // WHEN
+        UserSession result = loginUserUseCase.apply(credentials);
+
+        // THEN
+        assertNotNull(result);
+        assertEquals(username, result.getUserId());
+        assertEquals(expectedToken, result.getJwtToken());
     }
 }

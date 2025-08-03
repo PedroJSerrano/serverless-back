@@ -24,7 +24,9 @@ public class SsmJwtSecretProviderAdapter {
                 .withDecryption(true) // Crucial para SecureString
                 .build();
                 
-        return () -> Optional.ofNullable(ssmClient.getParameter(request))
+        return () -> Optional.ofNullable(ssmClient.getParameter(
+                    request
+                ))
                             .map(GetParameterResponse::parameter)
                             .map(Parameter::value)
                             .orElseThrow(() -> new RuntimeException("No se pudo obtener el secreto JWT"));
