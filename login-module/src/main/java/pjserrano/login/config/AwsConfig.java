@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.services.ssm.SsmClient;
 
+
 /**
  * Configuración de clientes AWS.
  * Spring Cloud AWS maneja automáticamente credenciales y región,
