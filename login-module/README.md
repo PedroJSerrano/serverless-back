@@ -151,7 +151,7 @@ mvn clean compile
 mvn test
 
 # Ejecutar función localmente
-sam local invoke LoginFunction --event ../events/event.json
+sam local invoke LoginFunction --event ../events/event-login-successful.json
 
 # Ejecutar API localmente
 sam local start-api
