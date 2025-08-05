@@ -20,8 +20,8 @@
     </properties>
 
     <modules>
-        <module>login-module</module>
-        <module>user-management-module</module>
+        <module>auth-manager</module>
+        <module>user-manager</module>
     </modules>
 
     <!--Sin dependencias, serán manejadas por los modulos hijos
