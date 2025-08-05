@@ -16,13 +16,14 @@ Aplicación serverless modular desarrollada con **Java 21** y **arquitectura hex
 
 ## Módulos
 
-### 🔐 [Login Module](./login-module/README.md)
+### 🔐 [Auth Manager](./auth-manager/README.md)
 Módulo de autenticación que proporciona:
 - Validación de credenciales de usuario
 - Generación de tokens JWT
 - Integración con AWS Systems Manager para secretos
+- 🚧 **Lambda Authorizer** para recursos privados (en construcción)
 
-### 👥 [User Management Module](./user-management-module/README.md)
+### 👥 [User Manager](./user-manager/README.md)
 Módulo de gestión de usuarios que incluye:
 - Registro de nuevos usuarios
 - Actualización de datos de usuario
@@ -128,10 +129,10 @@ Para simplificar la resolución de problemas, SAM CLI tiene un comando llamado `
 
 ```bash
 # Obtener logs en tiempo real
-sam logs -n LoginFunction --stack-name login-module --tail
+sam logs -n LoginFunction --stack-name auth-manager --tail
 
 # Obtener logs de un período específico
-sam logs -n LoginFunction --stack-name login-module --start-time '10min ago'
+sam logs -n LoginFunction --stack-name auth-manager --start-time '10min ago'
 ```
 
 Puedes encontrar más información y ejemplos sobre filtrado de logs de funciones Lambda en la [Documentación de SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
@@ -140,14 +141,14 @@ Puedes encontrar más información y ejemplos sobre filtrado de logs de funcione
 
 ```
 MyServerlessApp/
-├── login-module/           # Módulo de autenticación (✅ Completo)
+├── auth-manager/           # Módulo de autenticación (✅ Completo)
 │   ├── src/
 │   │   ├── main/java/      # Código fuente
 │   │   └── test/java/      # Tests (>90% cobertura)
 │   ├── template.yaml       # Plantilla SAM
 │   ├── pom.xml            # Configuración Maven
 │   └── README.md          # Documentación del módulo
-├── user-management-module/ # Módulo de gestión de usuarios (🚧 En desarrollo)
+├── user-manager/           # Módulo de gestión de usuarios (🚧 En desarrollo)
 │   ├── src/
 │   ├── template.yaml
 │   ├── pom.xml
@@ -162,8 +163,8 @@ MyServerlessApp/
 Para eliminar recursos desplegados, ejecuta `sam delete` en cada módulo:
 
 ```bash
-cd login-module && sam delete
-cd ../user-management-module && sam delete
+cd auth-manager && sam delete
+cd ../user-manager && sam delete
 ```
 
 ## Calidad del Código
