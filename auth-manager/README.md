@@ -96,7 +96,7 @@ El módulo cuenta con **cobertura completa de tests** (>90% en todas las métric
 
 ### Estructura de Tests
 - **Tests Unitarios**: Verifican lógica de negocio con mocks
-- **Tests de Integración**: Verifican configuración Spring con LocalStack
+- **Tests de Integración**: Verifican configuración Spring con mocks (sin dependencias externas)
 - **Tests de Producción**: Verifican comportamiento con configuración AWS real
 
 ### Clases de Test por Componente
@@ -114,11 +114,15 @@ El módulo cuenta con **cobertura completa de tests** (>90% en todas las métric
 │   ├── in/web/
 │   │   ├── LoginApiFunctionsUnitTest.java
 │   │   └── LoginApiFunctionsIntegrationTest.java
-│   └── out/security/
-│       ├── SecurityAdapterConfigUnitTest.java
-│       ├── SecurityAdapterConfigIntegrationTest.java
-│       ├── SsmJwtSecretProviderAdapterUnitTest.java
-│       └── SsmJwtSecretProviderAdapterIntegrationTest.java
+│   └── out/
+│       ├── persistence/
+│       │   ├── DynamoDbUserRepositoryAdapterTest.java
+│       │   └── DynamoDbUserRepositoryAdapterIntegrationTest.java
+│       └── security/
+│           ├── SecurityAdapterConfigUnitTest.java
+│           ├── SecurityAdapterConfigIntegrationTest.java
+│           ├── SsmJwtSecretProviderAdapterUnitTest.java
+│           └── SsmJwtSecretProviderAdapterIntegrationTest.java
 ```
 
 ### Comandos de Testing
@@ -134,6 +138,9 @@ mvn test -Dtest="**/*UnitTest"
 
 # Ejecutar solo tests de integración
 mvn test -Dtest="**/*IntegrationTest"
+
+# Ejecutar solo tests de producción
+mvn test -Dtest="**/*ProductionTest,**/DynamoDbConfigTest"
 ```
 
 ## Desarrollo Local
@@ -142,15 +149,18 @@ mvn test -Dtest="**/*IntegrationTest"
 - **Java 21**
 - **Maven 3.8+**
 - **SAM CLI**
-- **Docker** (para LocalStack y tests de integración)
+- **Configuración AWS** (para tests de producción y despliegue)
 
 ### Comandos de Desarrollo
 ```bash
 # Construir el módulo
 mvn clean compile
 
-# Ejecutar tests con LocalStack
+# Ejecutar todos los tests (unitarios + integración)
 mvn test
+
+# Ejecutar tests de producción (requiere configuración AWS)
+AWS_REGION=eu-west-1 mvn test -Dtest="**/*ProductionTest"
 
 # Ejecutar función localmente
 sam local invoke LoginFunction --event ../events/event-login-successful.json
@@ -168,7 +178,7 @@ curl -X POST http://localhost:3000/api/login \
 - **Spring Cloud AWS** para integración con servicios AWS
 - **Maven** para gestión de dependencias
 - **JUnit 5** + **Mockito** para testing
-- **TestContainers** + **LocalStack** para tests de integración
+- **Mocks** para tests de integración (sin dependencias externas)
 - **JaCoCo** para cobertura de código
 - **AWS Lambda** para ejecución serverless
 - **DynamoDB** para persistencia
