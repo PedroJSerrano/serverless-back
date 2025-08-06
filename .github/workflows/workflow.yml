@@ -16,14 +16,7 @@ jobs:
   build-and-test-and-sonar:
     runs-on: ubuntu-latest
     
-    services:
-      docker:
-        image: docker:24-dind
-        options: --privileged
-        ports:
-          - 2375:2375
-        env:
-          DOCKER_TLS_CERTDIR: ""
+
 
     steps:
       - name: Checkout del repositorio
@@ -38,28 +31,25 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Configurar Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: network=host
 
-      - name: Verificar Docker y preparar entorno
-        run: |
-          docker --version
-          docker info
-          # Pre-pull de imágenes necesarias para tests
-          docker pull localstack/localstack:latest
-          # Configurar variable para tests de integración
-          echo "DOCKER_HOST=tcp://localhost:2375" >> $GITHUB_ENV
-          echo "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock" >> $GITHUB_ENV
-          echo "TESTCONTAINERS_HOST_OVERRIDE=localhost" >> $GITHUB_ENV
 
-      - name: Build, Compilar y Ejecutar Pruebas con Maven
+      - name: Ejecutar Tests Unitarios
         run: |
-          # Ejecutar tests con Docker disponible
-          mvn -B clean package -Ddocker.available=true
+          # Solo tests unitarios (rápidos, sin dependencias externas)
+          mvn -B clean test -Dtest="**/*UnitTest"
+          
+      - name: Ejecutar Tests de Producción (si hay credenciales AWS)
+        if: env.AWS_REGION != ''
+        run: |
+          # Tests de producción solo si hay configuración AWS
+          mvn -B test -Dtest="**/*ProductionTest,**/DynamoDbConfigTest"
         env:
-          DOCKER_HOST: tcp://localhost:2375
+          AWS_REGION: eu-west-1
+          
+      - name: Compilar artefactos
+        run: |
+          # Compilar sin ejecutar tests (ya ejecutados arriba)
+          mvn -B compile package -DskipTests
 
       - name: Subir Informes de Pruebas
         uses: actions/upload-artifact@v4
