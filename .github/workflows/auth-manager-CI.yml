@@ -3,17 +3,16 @@ name: auth-manager-CI
 on:
   push:
     branches:
-      - master
       - develop
     paths:
-      - 'auth-manager'
+      - 'auth-manager/**'
       - 'pom.xml'
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - master
     paths:
-      - 'auth-manager'
+      - 'auth-manager/**'
       - 'pom.xml'
 
   workflow_dispatch:
@@ -21,6 +20,10 @@ on:
 jobs:
   build-and-test-and-sonar:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout del repositorio
@@ -33,27 +36,24 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          server-id: github
           cache: 'maven'
 
       - name: Ejecutar Tests Unitarios
         run: |
-          # Solo tests unitarios (rápidos, sin dependencias externas)
+          cd auth-manager
           mvn -B clean test -Dtest="**/*UnitTest"
-          
-      - name: Compilar artefactos
-        run: |
-          # Compilar sin ejecutar tests (ya ejecutados arriba)
-          mvn -B compile package -DskipTests
 
       - name: Subir Informes de Pruebas
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: surefire-reports
-          path: '**/target/surefire-reports'
+          path: 'auth-manager/**/target/surefire-reports'
 
-      - name: Subir artefactos de build
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-artefactos-build
-          path: target/*.jar
+      - name: Compilar y subir artefactos a GitHub Packages
+        run: |
+          cd auth-manager
+          mvn -B deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

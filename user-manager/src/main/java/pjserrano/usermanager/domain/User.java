@@ -1,4 +1,3 @@
 package pjserrano.usermanager.domain;
 
-public class User {
-}
+public class User { }
