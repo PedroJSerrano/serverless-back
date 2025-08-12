@@ -15,7 +15,6 @@ public class AwsConfig {
     @Bean
     public SsmClient ssmClient() {
         // Spring Cloud AWS configura automáticamente credenciales y región
-
         return SsmClient.builder().build();
     }
 }
