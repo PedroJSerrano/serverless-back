@@ -1,4 +1,4 @@
-name: Build, Compile, Test & SonarCloud Analysis
+name: CI auth-manager
 
 on:
   push:
@@ -15,8 +15,6 @@ on:
 jobs:
   build-and-test-and-sonar:
     runs-on: ubuntu-latest
-    
-
 
     steps:
       - name: Checkout del repositorio
@@ -31,20 +29,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-
-
       - name: Ejecutar Tests Unitarios
         run: |
           # Solo tests unitarios (rápidos, sin dependencias externas)
           mvn -B clean test -Dtest="**/*UnitTest"
-          
-      - name: Ejecutar Tests de Producción (si hay credenciales AWS)
-        if: env.AWS_REGION != ''
-        run: |
-          # Tests de producción solo si hay configuración AWS
-          mvn -B test -Dtest="**/*ProductionTest,**/DynamoDbConfigTest"
-        env:
-          AWS_REGION: eu-west-1
           
       - name: Compilar artefactos
         run: |

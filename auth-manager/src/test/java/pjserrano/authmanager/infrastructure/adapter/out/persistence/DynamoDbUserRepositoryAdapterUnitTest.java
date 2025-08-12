@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
  * Usa mocks para testear solo la lógica del adaptador.
  */
 @ExtendWith(MockitoExtension.class)
-class DynamoDbUserRepositoryAdapterTest {
+class DynamoDbUserRepositoryAdapterUnitTest {
 
     @Mock
     private DynamoDbEnhancedClient mockEnhancedClient;

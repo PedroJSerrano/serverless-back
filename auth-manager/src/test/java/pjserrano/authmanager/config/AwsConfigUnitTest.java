@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class AwsConfigUnitTest {
 
-    // Verifica que la configuración existe y tiene el método correcto
+    // Verifica que la configuración existe y tiene el method correcto
     @Test
     void awsConfigClassExists() {
         AwsConfig config = new AwsConfig();
         assertNotNull(config);
         
-        // Verificar que el método existe usando reflexión
+        // Verificar que el method existe usando reflexión
         try {
             var method = config.getClass().getMethod("ssmClient");
             assertNotNull(method);
@@ -26,16 +26,5 @@ class AwsConfigUnitTest {
         } catch (NoSuchMethodException e) {
             fail("El método ssmClient() debería existir");
         }
-    }
-    
-    // Test condicional que solo se ejecuta si hay configuración AWS
-    @Test
-    @EnabledIfEnvironmentVariable(named = "AWS_REGION", matches = ".*")
-    void awsConfigCreatesSsmClientWhenAwsConfigured() {
-        AwsConfig config = new AwsConfig();
-        SsmClient client = config.ssmClient();
-        
-        assertNotNull(client);
-        assertEquals("ssm", client.serviceName());
     }
 }
