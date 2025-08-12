@@ -1,4 +1,4 @@
-name: Build, Compile, Test & SonarCloud Analysis
+name: CI auth-manager
 
 on:
   push:
@@ -15,8 +15,6 @@ on:
 jobs:
   build-and-test-and-sonar:
     runs-on: ubuntu-latest
-    
-
 
     steps:
       - name: Checkout del repositorio
