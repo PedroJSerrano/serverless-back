@@ -6,14 +6,14 @@ on:
       - master
       - develop
     paths:
-      - 'auth-manager'
+      - 'auth-manager/**'
       - 'pom.xml'
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - master
     paths:
-      - 'auth-manager'
+      - 'auth-manager/**'
       - 'pom.xml'
 
   workflow_dispatch:
@@ -38,11 +38,13 @@ jobs:
       - name: Ejecutar Tests Unitarios
         run: |
           # Solo tests unitarios (rápidos, sin dependencias externas)
+          cd auth-manager
           mvn -B clean test -Dtest="**/*UnitTest"
           
       - name: Compilar artefactos
         run: |
           # Compilar sin ejecutar tests (ya ejecutados arriba)
+          cd auth-manager
           mvn -B compile package -DskipTests
 
       - name: Subir Informes de Pruebas
@@ -50,7 +52,7 @@ jobs:
         if: failure()
         with:
           name: surefire-reports
-          path: '**/target/surefire-reports'
+          path: 'auth-manager/**/target/surefire-reports'
 
       - name: Subir artefactos de build
         uses: actions/upload-artifact@v4
