@@ -3,7 +3,6 @@ name: auth-manager-CI
 on:
   push:
     branches:
-      - master
       - develop
     paths:
       - 'auth-manager/**'
