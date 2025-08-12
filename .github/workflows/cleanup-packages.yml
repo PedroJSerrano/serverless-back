@@ -1,0 +1,26 @@
+name: Limpiar versiones de paquetes
+
+on:
+  schedule:
+    # Se ejecuta todos los días a la medianoche (UTC)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  delete-old-versions:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Eliminar versiones antiguas de auth-manager
+        uses: actions/delete-package-versions@v5
+        with:
+          # Especifica que el tipo de paquete es de Maven
+          package-type: 'maven'
+          # Nombre del paquete que quieres limpiar
+          package-name: 'pjserrano.auth-manager'
+          # Cuántas versiones de ese paquete se mantienen
+          # Mantendrá la más recientes.
+          min-versions-to-keep: 1

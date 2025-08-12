@@ -1,4 +1,4 @@
-name: auth-manager-CI
+name: Workflow de CI de auth-manager
 
 on:
   push:
