@@ -3,8 +3,8 @@ package pjserrano.authmanager.infrastructure.adapter.in.web;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pjserrano.authmanager.application.port.in.LoginUserUseCase;
-import pjserrano.authmanager.domain.UserCredentials;
+import pjserrano.authmanager.domain.port.in.LoginUserUseCase;
+import pjserrano.authmanager.domain.port.dto.ValidateUserCommand;
 import pjserrano.authmanager.infrastructure.adapter.in.web.dto.LoginRequest;
 import pjserrano.authmanager.infrastructure.adapter.in.web.dto.LoginResponse;
 
@@ -24,13 +24,13 @@ public class LoginApiFunctions {
     public Function<LoginRequest, LoginResponse> loginFunction() {
         return request -> {
             // Mapeo del DTO de entrada a un objeto de dominio
-            UserCredentials credentials = new UserCredentials(request.getUsername(), request.getPassword());
+            ValidateUserCommand credentials = new ValidateUserCommand(request.getUsername(), request.getPassword());
 
             /* Aquí es donde se invoca el caso de uso.
             No se llama a un method, sino a la función 'apply' que Spring Cloud
             Function ha inyectado, que internamente es la lambda
             definida en LoginUserService.*/
-            return new LoginResponse(loginUserUseCase.apply(credentials).getJwtToken());
+            return new LoginResponse(credentials.getUsername(), loginUserUseCase.apply(credentials).getJwtToken());
         };
     }
 }

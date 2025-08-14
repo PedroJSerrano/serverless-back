@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pjserrano.authmanager.application.port.in.LoginUserUseCase;
-import pjserrano.authmanager.domain.UserCredentials;
-import pjserrano.authmanager.domain.UserSession;
+import pjserrano.authmanager.domain.port.dto.ValidateUserResponse;
+import pjserrano.authmanager.domain.port.in.LoginUserUseCase;
+import pjserrano.authmanager.domain.port.dto.ValidateUserCommand;
 import pjserrano.authmanager.domain.exceptions.InvalidCredentialsException;
 import pjserrano.authmanager.infrastructure.adapter.in.web.dto.LoginRequest;
 import pjserrano.authmanager.infrastructure.adapter.in.web.dto.LoginResponse;
@@ -45,16 +45,16 @@ class LoginApiFunctionsUnitTest {
         LoginRequest loginRequest = new LoginRequest(username, password);
 
         String jwtToken = "mock-jwt-token-12345";
-        UserSession userSession = new UserSession("mock-user-id", jwtToken);
+        ValidateUserResponse userSession = new ValidateUserResponse("mock-user-id", jwtToken);
 
-        when(mockLoginUserUseCase.apply(any(UserCredentials.class))).thenReturn(userSession);
+        when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class))).thenReturn(userSession);
 
         // WHEN
         LoginResponse response = loginFunction.apply(loginRequest);
 
         // THEN
         assertEquals(jwtToken, response.getJwtToken(), "El token del JWT debería coincidir");
-        verify(mockLoginUserUseCase).apply(new UserCredentials(username, password));
+        verify(mockLoginUserUseCase).apply(new ValidateUserCommand(username, password));
     }
 
     // Verifica que se propagan las excepciones del caso de uso
@@ -63,12 +63,12 @@ class LoginApiFunctionsUnitTest {
         // GIVEN
         LoginRequest loginRequest = new LoginRequest("invalid@user.com", "wrongpassword");
 
-        when(mockLoginUserUseCase.apply(any(UserCredentials.class)))
+        when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException("Invalid credentials"));
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
-        verify(mockLoginUserUseCase).apply(any(UserCredentials.class));
+        verify(mockLoginUserUseCase).apply(any(ValidateUserCommand.class));
     }
 
     // Verifica el manejo de requests con campos nulos
@@ -77,15 +77,15 @@ class LoginApiFunctionsUnitTest {
         // GIVEN
         LoginRequest loginRequest = new LoginRequest(null, null);
 
-        when(mockLoginUserUseCase.apply(any(UserCredentials.class)))
+        when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException("Invalid credentials"));
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
-        verify(mockLoginUserUseCase).apply(new UserCredentials(null, null));
+        verify(mockLoginUserUseCase).apply(new ValidateUserCommand(null, null));
     }
 
-    // Verifica el mapeo correcto de UserSession a LoginResponse
+    // Verifica el mapeo correcto de ValidateUserResponse a LoginResponse
     @Test
     void givenUserSession_whenMappingToResponse_thenExtractsTokenCorrectly() {
         // GIVEN
@@ -94,9 +94,9 @@ class LoginApiFunctionsUnitTest {
         LoginRequest loginRequest = new LoginRequest(username, password);
 
         String expectedToken = "expected-jwt-token";
-        UserSession userSession = new UserSession("user123", expectedToken);
+        ValidateUserResponse userSession = new ValidateUserResponse("user123", expectedToken);
 
-        when(mockLoginUserUseCase.apply(any(UserCredentials.class))).thenReturn(userSession);
+        when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class))).thenReturn(userSession);
 
         // WHEN
         LoginResponse response = loginFunction.apply(loginRequest);
@@ -112,11 +112,11 @@ class LoginApiFunctionsUnitTest {
         // GIVEN
         LoginRequest loginRequest = new LoginRequest("", "");
 
-        when(mockLoginUserUseCase.apply(any(UserCredentials.class)))
+        when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException("Empty credentials"));
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
-        verify(mockLoginUserUseCase).apply(new UserCredentials("", ""));
+        verify(mockLoginUserUseCase).apply(new ValidateUserCommand("", ""));
     }
 }

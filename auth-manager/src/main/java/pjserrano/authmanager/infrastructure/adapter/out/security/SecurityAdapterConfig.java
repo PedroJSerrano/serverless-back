@@ -5,8 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pjserrano.authmanager.application.port.out.JwtSecretProviderPort;
-import pjserrano.authmanager.application.port.out.TokenServicePort;
+import pjserrano.authmanager.domain.port.out.JwtSecretProviderPort;
+import pjserrano.authmanager.domain.port.out.TokenServicePort;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
