@@ -4,32 +4,48 @@ Aplicación serverless modular desarrollada con **Java 21** y **arquitectura hex
 
 ## Stack Tecnológico
 
-- **Java 21** con Spring Cloud Function
-- **Maven** para gestión de dependencias
+- **Java 21** con Spring Cloud Function 4.3.0
+- **Spring Boot 3.5.4** - Framework base
+- **Maven** para gestión de dependencias (multi-módulo)
 - **AWS Lambda** para funciones serverless
-- **DynamoDB** para persistencia
+- **DynamoDB** para persistencia NoSQL
 - **API Gateway** para endpoints HTTP
-- **AWS Systems Manager** para gestión de secretos
-- **Spring Cloud AWS** para integración simplificada con AWS
-- **JaCoCo** para cobertura de tests (>90%)
-- **TestContainers** + **LocalStack** para tests de integración
+- **AWS Systems Manager (SSM)** para gestión de secretos
+- **Spring Cloud AWS 3.2.1** para integración con servicios AWS
+- **JWT (jsonwebtoken 0.12.6)** para autenticación
+- **Lombok 1.18.30** para reducción de boilerplate
+- **JaCoCo 0.8.12** para cobertura de tests (>90%)
+- **JUnit 5 + Mockito** para testing
+- **TestContainers 1.19.8 + LocalStack** para tests de integración
 
 ## Módulos
 
-### 🔐 [Auth Manager](./auth-manager/README.md)
+### 🔐 [Auth Manager](./auth-manager/README.md) ✅ **Completo**
 Módulo de autenticación que proporciona:
-- Validación de credenciales de usuario
-- Generación de tokens JWT
+- Validación de credenciales contra DynamoDB
+- Generación de tokens JWT con expiración configurable
 - Integración con AWS Systems Manager para secretos
+- API REST: `POST /api/login`
 - 🚧 **Lambda Authorizer** para recursos privados (en construcción)
 
-### 👥 [User Manager](./user-manager/README.md)
-Módulo de gestión de usuarios que incluye:
-- Registro de nuevos usuarios
+**Tecnologías:** Spring Cloud Function, DynamoDB, SSM, JWT
+
+### 👥 [User Manager](./user-manager/README.md) 🚧 **En desarrollo**
+Módulo de gestión de usuarios que incluirá:
+- Registro de nuevos usuarios (CRUD)
 - Actualización de datos de usuario
 - Eliminación de usuarios
+- Validaciones de negocio
 
-⚠️ **En desarrollo** - Este módulo está actualmente en construcción.
+**Tecnologías:** Spring Cloud Function, DynamoDB, JWT
+
+### 📊 [Database MySQL](./database-mysql/README.md) 📄 **Utilidades** 🚧 **En desarrollo**
+Módulo de gestión de base de datos que proporciona:
+- Scripts de migración con Liquibase 4.33.0
+- Versionado de esquemas de base de datos
+- Conector MySQL 9.3.0
+
+**Tecnologías:** Liquibase, MySQL Connector
 
 ## Arquitectura
 
@@ -142,18 +158,21 @@ Puedes encontrar más información y ejemplos sobre filtrado de logs de funcione
 ```
 MyServerlessApp/
 ├── auth-manager/           # Módulo de autenticación (✅ Completo)
-│   ├── src/
-│   │   ├── main/java/      # Código fuente
-│   │   └── test/java/      # Tests (>90% cobertura)
+│   ├── src/                # Código fuente y tests
+│   ├── events/             # Eventos de prueba JSON
 │   ├── template.yaml       # Plantilla SAM
 │   ├── pom.xml            # Configuración Maven
 │   └── README.md          # Documentación del módulo
 ├── user-manager/           # Módulo de gestión de usuarios (🚧 En desarrollo)
-│   ├── src/
-│   ├── template.yaml
-│   ├── pom.xml
-│   └── README.md
-├── events/                 # Eventos de prueba para testing local
+│   ├── src/               # Código fuente y tests
+│   ├── template.yaml      # Plantilla SAM
+│   ├── pom.xml           # Configuración Maven
+│   └── README.md         # Documentación del módulo
+├── database-mysql/         # Módulo de migraciones de BD (📄 Utilidades)
+│   ├── src/               # Scripts Liquibase
+│   ├── pom.xml           # Dependencias Liquibase y MySQL
+│   └── README.md         # Documentación del módulo
+├── .github/workflows/      # CI/CD con GitHub Actions
 ├── pom.xml                # POM padre con configuración común
 └── README.md              # Este archivo
 ```
@@ -163,8 +182,13 @@ MyServerlessApp/
 Para eliminar recursos desplegados, ejecuta `sam delete` en cada módulo:
 
 ```bash
+# Eliminar recursos de auth-manager
 cd auth-manager && sam delete
+
+# Eliminar recursos de user-manager (cuando esté desplegado)
 cd ../user-manager && sam delete
+
+# database-mysql no requiere limpieza (solo contiene scripts)
 ```
 
 ## Calidad del Código
@@ -176,9 +200,9 @@ El proyecto mantiene una cobertura de tests superior al 90% en todas las métric
 - **Cobertura de ramas**: >90%
 
 ### Tipos de Tests
-- **Tests Unitarios**: Verifican lógica de negocio con mocks
-- **Tests de Integración**: Verifican integración con servicios AWS usando LocalStack
-- **Tests de Producción**: Verifican configuración con servicios AWS reales
+- **Tests Unitarios**: Verifican lógica de negocio con mocks (sin dependencias externas)
+- **Tests de Integración**: Verifican configuración Spring con mocks (TestContainers + LocalStack)
+- **Tests de Producción**: Verifican comportamiento con servicios AWS reales
 
 ## Recursos Adicionales
 
