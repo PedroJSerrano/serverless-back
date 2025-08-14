@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pjserrano.authmanager.application.port.out.UserRepositoryPort;
-import pjserrano.authmanager.domain.UserPrincipal;
+import pjserrano.authmanager.domain.model.User;
+import pjserrano.authmanager.domain.port.out.UserRepositoryPort;
 import pjserrano.authmanager.infrastructure.adapter.out.persistence.model.UserDynamoEntity;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -59,11 +59,11 @@ class DynamoDbUserRepositoryAdapterUnitTest {
         when(mockUserTable.getItem(any(Key.class))).thenReturn(mockEntity);
 
         // WHEN
-        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+        Optional<User> result = userRepositoryPort.apply(username);
 
         // THEN
         assertTrue(result.isPresent(), "User should be found");
-        UserPrincipal user = result.get();
+        User user = result.get();
         assertEquals(username, user.getUsername());
         assertEquals("encoded_password", user.getPassword());
         assertIterableEquals(List.of("USER", "ADMIN"), user.getRoles());
@@ -76,7 +76,7 @@ class DynamoDbUserRepositoryAdapterUnitTest {
         when(mockUserTable.getItem(any(Key.class))).thenReturn(null);
 
         // WHEN
-        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+        Optional<User> result = userRepositoryPort.apply(username);
 
         // THEN
         assertFalse(result.isPresent(), "Non-existent user should return empty");
@@ -95,11 +95,11 @@ class DynamoDbUserRepositoryAdapterUnitTest {
         when(mockUserTable.getItem(any(Key.class))).thenReturn(mockEntity);
 
         // WHEN
-        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+        Optional<User> result = userRepositoryPort.apply(username);
 
         // THEN
         assertTrue(result.isPresent(), "User without roles should be found");
-        UserPrincipal user = result.get();
+        User user = result.get();
         assertEquals(username, user.getUsername());
         assertTrue(user.getRoles().isEmpty(), "Roles should be empty list, not null");
     }
@@ -111,7 +111,7 @@ class DynamoDbUserRepositoryAdapterUnitTest {
         when(mockUserTable.getItem(any(Key.class))).thenThrow(new RuntimeException("DynamoDB error"));
 
         // WHEN
-        Optional<UserPrincipal> result = userRepositoryPort.apply(username);
+        Optional<User> result = userRepositoryPort.apply(username);
 
         // THEN
         assertFalse(result.isPresent(), "Should return empty when DynamoDB fails");

@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pjserrano.authmanager.application.port.in.LoginUserUseCase;
-import pjserrano.authmanager.application.port.out.TokenServicePort;
-import pjserrano.authmanager.application.port.out.UserRepositoryPort;
-import pjserrano.authmanager.domain.UserCredentials;
-import pjserrano.authmanager.domain.UserPrincipal;
-import pjserrano.authmanager.domain.UserSession;
+import pjserrano.authmanager.domain.model.User;
+import pjserrano.authmanager.domain.port.dto.ValidateUserResponse;
+import pjserrano.authmanager.domain.port.in.LoginUserUseCase;
+import pjserrano.authmanager.domain.port.out.TokenServicePort;
+import pjserrano.authmanager.domain.port.out.UserRepositoryPort;
+import pjserrano.authmanager.domain.port.dto.ValidateUserCommand;
 import pjserrano.authmanager.domain.exceptions.InvalidCredentialsException;
 
 import java.util.List;
@@ -50,20 +50,20 @@ class LoginUserServiceUnitTest {
         // GIVEN - Preparamos el escenario
         String username = "testuser";
         String password = "password123";
-        UserCredentials credentials = new UserCredentials(username, password);
-        UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of("ROLE_USER"));
+        ValidateUserCommand credentials = new ValidateUserCommand(username, password);
+        User user = new User(username, password, List.of("ROLE_USER"));
         String expectedToken = "mocked.jwt.token";
 
         /* Le decimos a nuestro mock del repositorio qué debe hacer
-        cuando se le llame con "testuser". Debe devolver un Optional.of(userPrincipal).*/
-        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
+        cuando se le llame con "testuser". Debe devolver un Optional.of(user).*/
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
 
         /* Le decimos a nuestro mock del servicio de tokens qué debe hacer
-        cuando se le llame con el UserPrincipal. Debe devolver nuestro token de mock.*/
-        when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
+        cuando se le llame con el User. Debe devolver nuestro token de mock.*/
+        when(mockTokenServicePort.apply(user)).thenReturn(expectedToken);
 
         // WHEN - Ejecutamos la acción que queremos probar
-        UserSession result = loginUserUseCase.apply(credentials);
+        ValidateUserResponse result = loginUserUseCase.apply(credentials);
 
         // THEN - Verificamos los resultados
         assertNotNull(result);
@@ -73,7 +73,7 @@ class LoginUserServiceUnitTest {
         /* Verificamos que los métodos de nuestros mocks fueron llamados
         exactamente una vez, asegurando que la lógica siguió el camino correcto.*/
         verify(mockUserRepositoryPort, times(1)).apply(username);
-        verify(mockTokenServicePort, times(1)).apply(userPrincipal);
+        verify(mockTokenServicePort, times(1)).apply(user);
     }
 
     // Verifica que se lanza excepción cuando la contraseña es incorrecta
@@ -83,10 +83,10 @@ class LoginUserServiceUnitTest {
         String username = "testuser";
         String validPassword = "password123";
         String invalidPassword = "wrongpassword";
-        UserCredentials credentials = new UserCredentials(username, invalidPassword);
-        UserPrincipal userPrincipal = new UserPrincipal(username, validPassword, List.of("ROLE_USER"));
+        ValidateUserCommand credentials = new ValidateUserCommand(username, invalidPassword);
+        User user = new User(username, validPassword, List.of("ROLE_USER"));
 
-        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
 
         // WHEN & THEN - Usamos assertThrows para verificar que se lanza la excepción
         assertThrows(InvalidCredentialsException.class, () -> loginUserUseCase.apply(credentials));
@@ -100,7 +100,7 @@ class LoginUserServiceUnitTest {
     void whenUserNotFound_thenShouldThrowException() {
         // GIVEN
         String username = "nonexistent";
-        UserCredentials credentials = new UserCredentials(username, "anypassword");
+        ValidateUserCommand credentials = new ValidateUserCommand(username, "anypassword");
 
         // El mock devuelve un Optional vacío, simulando que el usuario no existe
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.empty());
@@ -125,15 +125,15 @@ class LoginUserServiceUnitTest {
         // GIVEN
         String username = "adminuser";
         String password = "adminpass";
-        UserCredentials credentials = new UserCredentials(username, password);
-        UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of("ROLE_USER", "ROLE_ADMIN"));
+        ValidateUserCommand credentials = new ValidateUserCommand(username, password);
+        User user = new User(username, password, List.of("ROLE_USER", "ROLE_ADMIN"));
         String expectedToken = "admin.jwt.token";
 
-        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
-        when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
+        when(mockTokenServicePort.apply(user)).thenReturn(expectedToken);
 
         // WHEN
-        UserSession result = loginUserUseCase.apply(credentials);
+        ValidateUserResponse result = loginUserUseCase.apply(credentials);
 
         // THEN
         assertNotNull(result);
@@ -147,15 +147,15 @@ class LoginUserServiceUnitTest {
         // GIVEN
         String username = "basicuser";
         String password = "basicpass";
-        UserCredentials credentials = new UserCredentials(username, password);
-        UserPrincipal userPrincipal = new UserPrincipal(username, password, List.of());
+        ValidateUserCommand credentials = new ValidateUserCommand(username, password);
+        User user = new User(username, password, List.of());
         String expectedToken = "basic.jwt.token";
 
-        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(userPrincipal));
-        when(mockTokenServicePort.apply(userPrincipal)).thenReturn(expectedToken);
+        when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
+        when(mockTokenServicePort.apply(user)).thenReturn(expectedToken);
 
         // WHEN
-        UserSession result = loginUserUseCase.apply(credentials);
+        ValidateUserResponse result = loginUserUseCase.apply(credentials);
 
         // THEN
         assertNotNull(result);

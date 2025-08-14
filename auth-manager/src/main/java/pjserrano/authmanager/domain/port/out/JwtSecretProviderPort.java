@@ -1,4 +1,4 @@
-package pjserrano.authmanager.application.port.out;
+package pjserrano.authmanager.domain.port.out;
 
 import java.util.function.Supplier;
 

@@ -1,6 +1,6 @@
-package pjserrano.authmanager.application.port.out;
+package pjserrano.authmanager.domain.port.out;
 
-import pjserrano.authmanager.domain.UserPrincipal;
+import pjserrano.authmanager.domain.model.User;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -9,4 +9,4 @@ import java.util.function.Function;
 Se define como una interfaz funcional porque la lógica de buscar por nombre
 de usuario se puede expresar como una función que recibe un String y devuelve un Optional.
 Define unicamente la interfaz funcional, la implementacion puede ser JDBC, R2DBC, MongoDB, DynamoDB... */
-public interface UserRepositoryPort extends Function<String, Optional<UserPrincipal>> {}
+public interface UserRepositoryPort extends Function<String, Optional<User>> {}

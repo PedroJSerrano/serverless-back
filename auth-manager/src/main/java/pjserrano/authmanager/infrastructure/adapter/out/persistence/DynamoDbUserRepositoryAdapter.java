@@ -3,8 +3,8 @@ package pjserrano.authmanager.infrastructure.adapter.out.persistence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pjserrano.authmanager.application.port.out.UserRepositoryPort; // La interfaz funcional
-import pjserrano.authmanager.domain.UserPrincipal;
+import pjserrano.authmanager.domain.port.out.UserRepositoryPort; // La interfaz funcional
+import pjserrano.authmanager.domain.model.User;
 import pjserrano.authmanager.infrastructure.adapter.out.persistence.model.UserDynamoEntity;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -41,13 +41,13 @@ public class DynamoDbUserRepositoryAdapter {
                     return Optional.empty();
                 }
 
-                UserPrincipal principal = new UserPrincipal(
+                User user = new User(
                         entity.getUsername(),
                         entity.getPassword(),
                         entity.getRoles() != null ? new java.util.ArrayList<>(entity.getRoles()) : List.of()
                 );
 
-                return Optional.of(principal);
+                return Optional.of(user);
             } catch (Exception e) {
                 logger.severe("Error al buscar usuario en DynamoDB: " + e.getMessage());
                 return Optional.empty();

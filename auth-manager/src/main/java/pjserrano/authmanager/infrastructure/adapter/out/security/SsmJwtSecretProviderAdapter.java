@@ -3,7 +3,7 @@ package pjserrano.authmanager.infrastructure.adapter.out.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pjserrano.authmanager.application.port.out.JwtSecretProviderPort;
+import pjserrano.authmanager.domain.port.out.JwtSecretProviderPort;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;

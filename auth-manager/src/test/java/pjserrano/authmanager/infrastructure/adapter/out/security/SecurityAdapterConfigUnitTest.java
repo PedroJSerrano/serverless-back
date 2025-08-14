@@ -10,9 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import pjserrano.authmanager.application.port.out.JwtSecretProviderPort;
-import pjserrano.authmanager.application.port.out.TokenServicePort;
-import pjserrano.authmanager.domain.UserPrincipal;
+import pjserrano.authmanager.domain.model.User;
+import pjserrano.authmanager.domain.port.out.JwtSecretProviderPort;
+import pjserrano.authmanager.domain.port.out.TokenServicePort;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -50,12 +50,12 @@ class SecurityAdapterConfigUnitTest {
         String username = "testuser";
         String password = "testpass";
         List<String> roles = List.of("USER", "ADMIN");
-        UserPrincipal userPrincipal = new UserPrincipal(username, password, roles);
+        User user = new User(username, password, roles);
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
         // WHEN
-        String token = tokenServicePort.apply(userPrincipal);
+        String token = tokenServicePort.apply(user);
 
         // THEN
         assertNotNull(token);
@@ -79,13 +79,13 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenUserHasMultipleRoles_thenAllRolesAreIncludedInToken() {
         // GIVEN
-        UserPrincipal userPrincipal = new UserPrincipal("admin", "adminpass", 
+        User user = new User("admin", "adminpass",
             List.of("USER", "ADMIN", "MODERATOR"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
         // WHEN
-        String token = tokenServicePort.apply(userPrincipal);
+        String token = tokenServicePort.apply(user);
 
         // THEN
         Jws<Claims> jws = Jwts.parser()
@@ -105,12 +105,12 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenUserHasNoRoles_thenEmptyRolesListInToken() {
         // GIVEN
-        UserPrincipal userPrincipal = new UserPrincipal("basicuser", "basicpass", List.of());
+        User user = new User("basicuser", "basicpass", List.of());
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
         // WHEN
-        String token = tokenServicePort.apply(userPrincipal);
+        String token = tokenServicePort.apply(user);
 
         // THEN
         Jws<Claims> jws = Jwts.parser()
@@ -128,12 +128,12 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenTokenIsGenerated_thenIssuedAtAndExpirationAreSet() {
         // GIVEN
-        UserPrincipal userPrincipal = new UserPrincipal("timeuser", "timepass", List.of("USER"));
+        User user = new User("timeuser", "timepass", List.of("USER"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
         // WHEN
-        String token = tokenServicePort.apply(userPrincipal);
+        String token = tokenServicePort.apply(user);
 
         // THEN
         Jws<Claims> jws = Jwts.parser()
@@ -159,8 +159,8 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenDifferentUsers_thenDifferentTokensGenerated() {
         // GIVEN
-        UserPrincipal user1 = new UserPrincipal("user1", "pass1", List.of("USER"));
-        UserPrincipal user2 = new UserPrincipal("user2", "pass2", List.of("ADMIN"));
+        User user1 = new User("user1", "pass1", List.of("USER"));
+        User user2 = new User("user2", "pass2", List.of("ADMIN"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
