@@ -22,6 +22,7 @@
     <modules>
         <module>auth-manager</module>
         <module>user-manager</module>
+        <module>database-mysql</module>
     </modules>
 
     <!--Sin dependencias, serán manejadas por los modulos hijos

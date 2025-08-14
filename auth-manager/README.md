@@ -35,34 +35,42 @@ Implementa **arquitectura hexagonal** con separación clara de responsabilidades
 
 ```
 ├── domain/
-│   ├── UserCredentials.java      # Entidad de credenciales
-│   ├── UserPrincipal.java        # Entidad de usuario autenticado
-│   ├── UserSession.java          # Entidad de sesión
-│   └── exceptions/
-│       └── InvalidCredentialsException.java
+│   ├── model/
+│   │   └── User.java             # Entidad de usuario
+│   ├── exceptions/
+│   │   └── InvalidCredentialsException.java
+│   └── port/
+│       ├── dto/
+│       │   ├── ValidateUserCommand.java
+│       │   └── ValidateUserResponse.java
+│       ├── in/
+│       │   └── LoginUserUseCase.java # Puerto de entrada - Caso de uso
+│       └── out/
+│           ├── UserRepositoryPort.java    # Puerto de salida - Repositorio
+│           ├── TokenServicePort.java      # Puerto de salida - Tokens
+│           └── JwtSecretProviderPort.java # Puerto de salida - Secretos
 ├── application/
-│   ├── port/in/
-│   │   └── LoginUserUseCase.java # Puerto de entrada - Caso de uso
-│   ├── port/out/
-│   │   ├── UserRepositoryPort.java    # Puerto de salida - Repositorio
-│   │   ├── TokenServicePort.java      # Puerto de salida - Tokens
-│   │   └── JwtSecretProviderPort.java # Puerto de salida - Secretos
 │   └── service/
 │       └── LoginUserService.java # Implementación del caso de uso
 ├── infrastructure/
 │   └── adapter/
 │       ├── in/web/
-│       │   ├── LoginApiFunctions.java # Adaptador web - Función Lambda
-│       │   └── dto/               # DTOs de entrada/salida
+│       │   ├── dto/
+│       │   │   ├── LoginRequest.java
+│       │   │   └── LoginResponse.java
+│       │   └── LoginApiFunctions.java # Adaptador web - Función Lambda
 │       └── out/
 │           ├── persistence/
-│           │   └── DynamoDbUserRepositoryAdapter.java
+│           │   ├── DynamoDbUserRepositoryAdapter.java
+│           │   └── model/
+│           │       └── UserDynamoEntity.java
 │           └── security/
 │               ├── SecurityAdapterConfig.java
 │               └── SsmJwtSecretProviderAdapter.java
-└── config/
-    ├── DynamoDbConfig.java       # Configuración de DynamoDB
-    └── AwsConfig.java           # Configuración de AWS clients
+├── config/
+│   ├── AwsConfig.java           # Configuración de AWS clients
+│   └── DynamoDbConfig.java      # Configuración de DynamoDB
+└── AuthManagerApplication.java  # Clase principal
 ```
 
 ## Recursos AWS
@@ -97,32 +105,22 @@ El módulo cuenta con **cobertura completa de tests** (>90% en todas las métric
 ### Estructura de Tests
 - **Tests Unitarios**: Verifican lógica de negocio con mocks
 - **Tests de Integración**: Verifican configuración Spring con mocks (sin dependencias externas)
-- **Tests de Producción**: Verifican comportamiento con configuración AWS real
 
 ### Clases de Test por Componente
 ```
 ├── config/
-│   ├── AwsConfigUnitTest.java
-│   ├── AwsConfigIntegrationTest.java
-│   ├── AwsConfigProductionTest.java
-│   ├── DynamoDbConfigTest.java
-│   └── DynamoDbConfigIntegrationTest.java
+│   └── AwsConfigUnitTest.java
 ├── application/service/
-│   ├── LoginUserServiceUnitTest.java
-│   └── LoginUserServiceIntegrationTest.java
-├── infrastructure/adapter/
-│   ├── in/web/
-│   │   ├── LoginApiFunctionsUnitTest.java
-│   │   └── LoginApiFunctionsIntegrationTest.java
-│   └── out/
-│       ├── persistence/
-│       │   ├── DynamoDbUserRepositoryAdapterTest.java
-│       │   └── DynamoDbUserRepositoryAdapterIntegrationTest.java
-│       └── security/
-│           ├── SecurityAdapterConfigUnitTest.java
-│           ├── SecurityAdapterConfigIntegrationTest.java
-│           ├── SsmJwtSecretProviderAdapterUnitTest.java
-│           └── SsmJwtSecretProviderAdapterIntegrationTest.java
+│   └── LoginUserServiceUnitTest.java
+└── infrastructure/adapter/
+    ├── in/web/
+    │   └── LoginApiFunctionsUnitTest.java
+    └── out/
+        ├── persistence/
+        │   └── DynamoDbUserRepositoryAdapterUnitTest.java
+        └── security/
+            ├── SecurityAdapterConfigUnitTest.java
+            └── SsmJwtSecretProviderAdapterUnitTest.java
 ```
 
 ### Comandos de Testing
@@ -139,8 +137,6 @@ mvn test -Dtest="**/*UnitTest"
 # Ejecutar solo tests de integración
 mvn test -Dtest="**/*IntegrationTest"
 
-# Ejecutar solo tests de producción
-mvn test -Dtest="**/*ProductionTest,**/DynamoDbConfigTest"
 ```
 
 ## Desarrollo Local
@@ -159,8 +155,6 @@ mvn clean compile
 # Ejecutar todos los tests (unitarios + integración)
 mvn test
 
-# Ejecutar tests de producción (requiere configuración AWS)
-AWS_REGION=eu-west-1 mvn test -Dtest="**/*ProductionTest"
 
 # Ejecutar función localmente
 sam local invoke LoginFunction --event ../events/event-login-successful.json
