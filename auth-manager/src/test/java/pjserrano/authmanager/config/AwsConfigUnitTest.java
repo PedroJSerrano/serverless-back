@@ -1,7 +1,6 @@
 package pjserrano.authmanager.config;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import software.amazon.awssdk.services.ssm.SsmClient;
 
 import static org.junit.jupiter.api.Assertions.*;
