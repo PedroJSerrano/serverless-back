@@ -39,19 +39,12 @@ Módulo de gestión de usuarios que incluirá:
 
 **Tecnologías:** Spring Cloud Function, DynamoDB, JWT
 
-### 📊 [Database MySQL](./database-mysql/README.md) 📄 **Utilidades** 🚧 **En desarrollo**
-Módulo de gestión de base de datos que proporciona:
-- Scripts de migración con Liquibase 4.33.0
-- Versionado de esquemas de base de datos
-- Conector MySQL 9.3.0
-
-**Tecnologías:** Liquibase, MySQL Connector
-
 ## Arquitectura
 
 Cada módulo implementa **arquitectura hexagonal**:
-- **Domain** - Entidades y reglas de negocio
-- **Application** - Casos de uso y servicios
+- **Domain** - Clases y reglas de negocio, sin dependencias externas. Incluye la definición de los
+puertos y los casos de uso.
+- **Application** - servicios que definen los bean de los casos de uso
 - **Infrastructure** - Adaptadores (web, persistencia, externos)
 
 ## Herramientas de Desarrollo
@@ -201,8 +194,6 @@ El proyecto mantiene una cobertura de tests superior al 90% en todas las métric
 
 ### Tipos de Tests
 - **Tests Unitarios**: Verifican lógica de negocio con mocks (sin dependencias externas)
-- **Tests de Integración**: Verifican configuración Spring con mocks (TestContainers + LocalStack)
-- **Tests de Producción**: Verifican comportamiento con servicios AWS reales
 
 ## Recursos Adicionales
 
