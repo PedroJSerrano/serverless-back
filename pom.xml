@@ -5,87 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pjserrano</groupId>
-    <artifactId>my-serverless-app-parent</artifactId>
+    <artifactId>serverless-back</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>my serverless app</name>
+    <name>serverless-back</name>
     <description>my serverless app</description>
-
-    <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <modules>
         <module>auth-manager</module>
         <module>user-manager</module>
     </modules>
 
-    <!--Sin dependencias, serán manejadas por los modulos hijos
-    Definimos unicamente el plugin de jacoco, con las
-    caracteristicas generales que queremos para todos
-    los modulos-->
+    <!--Sin dependencias ni plugins predefinidos,
+    serán manejadas por los modulos hijos.-->
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.12</version>
-                    <executions>
-                        <execution>
-                            <id>default-prepare-agent</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>default-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <rule>
-                                        <element>BUNDLE</element>
-                                        <limits>
-                                            <limit>
-                                                <counter>LINE</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.10</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>METHOD</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.10</minimum>
-                                            </limit>
-                                        </limits>
-                                    </rule>
-                                </rules>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>default-report-aggregate</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>report-aggregate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <excludes>
-                            <exclude>**/*Configuration.*</exclude>
-                            <exclude>**/domain/**/model/**</exclude>
-                            <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                            <exclude>**/infrastructure/adapter/out/persistence/model/**</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>
