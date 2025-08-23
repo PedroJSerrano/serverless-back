@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pjserrano.authmanager.domain.port.out.UserRepositoryPort; // La interfaz funcional
 import pjserrano.authmanager.domain.model.User;
-import pjserrano.authmanager.infrastructure.adapter.out.persistence.model.UserDynamoEntity;
+import pjserrano.authmanager.infrastructure.adapter.out.persistence.entity.UserDynamoEntity;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -14,6 +14,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+
 
 @Configuration
 @RequiredArgsConstructor

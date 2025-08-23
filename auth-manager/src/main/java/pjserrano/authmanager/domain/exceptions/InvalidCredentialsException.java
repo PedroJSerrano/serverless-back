@@ -1,7 +1,8 @@
 package pjserrano.authmanager.domain.exceptions;
 
 public class InvalidCredentialsException extends RuntimeException {
+    public static final String ERROR_MESSAGE = "messages.error.auth.invalid-credentials";
     public InvalidCredentialsException() {
-        super("Invalid username or password");
+        super(ERROR_MESSAGE);
     }
 }

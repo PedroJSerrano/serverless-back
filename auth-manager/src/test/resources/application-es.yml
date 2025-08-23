@@ -1,0 +1,4 @@
+messages:
+  error:
+    auth:
+      invalid-credentials: "Las credenciales indicadas no son válidas"

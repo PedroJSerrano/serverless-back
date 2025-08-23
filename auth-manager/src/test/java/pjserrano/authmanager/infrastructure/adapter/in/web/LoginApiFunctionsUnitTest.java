@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import pjserrano.authmanager.domain.port.dto.ValidateUserResponse;
 import pjserrano.authmanager.domain.port.in.LoginUserUseCase;
 import pjserrano.authmanager.domain.port.dto.ValidateUserCommand;
@@ -28,7 +29,7 @@ class LoginApiFunctionsUnitTest {
     @Mock
     private LoginUserUseCase mockLoginUserUseCase;
 
-    private Function<LoginRequest, LoginResponse> loginFunction;
+    private Function<LoginRequest, ResponseEntity<LoginResponse>> loginFunction;
 
     @BeforeEach
     void setUp() {
@@ -36,10 +37,8 @@ class LoginApiFunctionsUnitTest {
         this.loginFunction = loginApiFunctions.loginFunction();
     }
 
-    // Verifica el flujo exitoso de login con credenciales válidas
     @Test
     void givenValidRequest_whenLoginFunctionCalled_thenReturnsLoginResponse() {
-        // GIVEN
         String username = "user@example.com";
         String password = "password123";
         LoginRequest loginRequest = new LoginRequest(username, password);
@@ -49,46 +48,39 @@ class LoginApiFunctionsUnitTest {
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class))).thenReturn(userSession);
 
-        // WHEN
-        LoginResponse response = loginFunction.apply(loginRequest);
+        ResponseEntity<LoginResponse> response = loginFunction.apply(loginRequest);
 
-        // THEN
-        assertEquals(jwtToken, response.getJwtToken(), "El token del JWT debería coincidir");
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(jwtToken, response.getBody().getJwtToken(), "El token del JWT debería coincidir");
+        assertEquals(username, response.getBody().getUserId());
         verify(mockLoginUserUseCase).apply(new ValidateUserCommand(username, password));
     }
 
-    // Verifica que se propagan las excepciones del caso de uso
     @Test
     void givenInvalidCredentials_whenLoginFunctionCalled_thenThrowsException() {
-        // GIVEN
         LoginRequest loginRequest = new LoginRequest("invalid@user.com", "wrongpassword");
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException());
 
-        // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
         verify(mockLoginUserUseCase).apply(any(ValidateUserCommand.class));
     }
 
-    // Verifica el manejo de requests con campos nulos
     @Test
     void givenRequestWithNullFields_whenLoginFunctionCalled_thenHandlesGracefully() {
-        // GIVEN
         LoginRequest loginRequest = new LoginRequest(null, null);
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException());
 
-        // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
         verify(mockLoginUserUseCase).apply(new ValidateUserCommand(null, null));
     }
 
-    // Verifica el mapeo correcto de ValidateUserResponse a LoginResponse
     @Test
     void givenUserSession_whenMappingToResponse_thenExtractsTokenCorrectly() {
-        // GIVEN
         String username = "testuser";
         String password = "testpass";
         LoginRequest loginRequest = new LoginRequest(username, password);
@@ -98,24 +90,20 @@ class LoginApiFunctionsUnitTest {
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class))).thenReturn(userSession);
 
-        // WHEN
-        LoginResponse response = loginFunction.apply(loginRequest);
+        ResponseEntity<LoginResponse> response = loginFunction.apply(loginRequest);
 
-        // THEN
         assertNotNull(response);
-        assertEquals(expectedToken, response.getJwtToken());
+        assertNotNull(response.getBody());
+        assertEquals(expectedToken, response.getBody().getJwtToken());
     }
 
-    // Verifica que se manejan correctamente los requests vacíos
     @Test
     void givenEmptyCredentials_whenLoginFunctionCalled_thenPassesToUseCase() {
-        // GIVEN
         LoginRequest loginRequest = new LoginRequest("", "");
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
                 .thenThrow(new InvalidCredentialsException());
 
-        // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
         verify(mockLoginUserUseCase).apply(new ValidateUserCommand("", ""));
     }
