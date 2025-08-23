@@ -5,29 +5,36 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>pjserrano</groupId>
-        <artifactId>my-serverless-app-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <artifactId>serverless-back</artifactId>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>user-manager</artifactId>
     <packaging>jar</packaging>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>user-manager</name>
-    <description>user-management</description>
+    <description>Module with business logic for functions associated with user management</description>
 
     <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
         <spring.boot.version>3.5.4</spring.boot.version>
+        <spring.cloud.aws.version>3.2.1</spring.cloud.aws.version>
         <aws.lambda.java.core.version>1.2.3</aws.lambda.java.core.version>
         <aws.lambda.java.events.version>3.11.0</aws.lambda.java.events.version>
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
-        <org.testcontainers.version>1.19.8</org.testcontainers.version>
-        <maven.shade.plugin.version>3.6.0</maven.shade.plugin.version>
+        <maven.plugin.version>3.3.1</maven.plugin.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+        <amazon.sdk.dynamodb.version>2.26.13</amazon.sdk.dynamodb.version>
+        <amazon.sdk.ssm.version>2.20.73</amazon.sdk.ssm.version>
+        <junit.jupiter.api.version>5.13.4</junit.jupiter.api.version>
     </properties>
 
     <dependencies>
+        <!-- Spring Cloud Function - Framework para funciones serverless -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-core</artifactId>
@@ -48,12 +55,15 @@
             <artifactId>spring-cloud-starter-function-web</artifactId>
             <version>${spring.cloud.function.version}</version>
         </dependency>
+
+        <!-- Spring Boot - Framework base y configuración -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
 
+        <!-- AWS Lambda - Runtime y eventos para funciones Lambda -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
@@ -64,10 +74,19 @@
             <artifactId>aws-lambda-java-events</artifactId>
             <version>${aws.lambda.java.events.version}</version>
         </dependency>
+
+        <!-- Spring Cloud AWS - Autoconfiguración para servicios AWS -->
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter</artifactId>
+            <version>${spring.cloud.aws.version}</version>
+        </dependency>
+
+        <!-- AWS SDK - Servicios de AWS (DynamoDB, SSM) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
-            <version>2.26.13</version>
+            <version>${amazon.sdk.dynamodb.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -82,14 +101,15 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb-enhanced</artifactId>
-            <version>2.26.13</version>
+            <version>${amazon.sdk.dynamodb.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>ssm</artifactId>
-            <version>2.20.73</version>
+            <version>${amazon.sdk.ssm.version}</version>
         </dependency>
 
+        <!-- Utilidades - JWT y reducción de boilerplate -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -107,7 +127,6 @@
             <scope>runtime</scope>
             <version>${jsonwebtoken.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -115,6 +134,7 @@
             <version>${lombok.version}</version>
         </dependency>
 
+        <!-- Testing - Dependencias para pruebas unitarias -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -122,42 +142,90 @@
             <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${org.testcontainers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>localstack</artifactId>
-            <version>${org.testcontainers.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.api.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>${maven.shade.plugin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${maven.plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <finalName>${project.artifactId}</finalName>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <mainClass>pjserrano.authmanager.AuthManagerApplication</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>jacoco-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*Configuration.*</exclude>
+                                <exclude>**/domain/**/model/**</exclude>
+                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
+                                <exclude>**/infrastructure/adapter/out/persistence/model/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>METHOD</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                            <excludes>
+                                <exclude>**/*Configuration.*</exclude>
+                                <exclude>**/domain/model/**</exclude>
+                                <exclude>**/domain/port/dto/**</exclude>
+                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
+                                <exclude>**/infrastructure/adapter/out/persistence/entity/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
