@@ -9,6 +9,11 @@ on:
       - 'auth-manager/**'
       - 'pom.xml'
 
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
 jobs:
   call-ci-workflow:
     uses: ./.github/workflows/reusable-ci.yml
