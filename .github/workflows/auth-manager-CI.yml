@@ -11,6 +11,6 @@ on:
 
 jobs:
   call-ci-workflow:
-    uses: ./.github/workflows/reusable-ci.yml@master # O la rama donde tengas el reusable
+    uses: ./.github/workflows/reusable-ci.yml
     with:
       module_name: 'auth-manager'
