@@ -1,4 +1,4 @@
-# MyServerlessApp
+# serverless-back
 
 Aplicación serverless modular desarrollada con **Java 21** y **arquitectura hexagonal**. Cada módulo se puede desplegar independientemente usando SAM CLI.
 
@@ -149,25 +149,22 @@ Puedes encontrar más información y ejemplos sobre filtrado de logs de funcione
 ## Estructura del Proyecto
 
 ```
-MyServerlessApp/
+serverless-back/
 ├── auth-manager/           # Módulo de autenticación (✅ Completo)
 │   ├── src/                # Código fuente y tests
 │   ├── events/             # Eventos de prueba JSON
 │   ├── template.yaml       # Plantilla SAM
-│   ├── pom.xml            # Configuración Maven
-│   └── README.md          # Documentación del módulo
+│   ├── pom.xml             # Configuración Maven
+│   └── README.md           # Documentación del módulo
 ├── user-manager/           # Módulo de gestión de usuarios (🚧 En desarrollo)
-│   ├── src/               # Código fuente y tests
-│   ├── template.yaml      # Plantilla SAM
-│   ├── pom.xml           # Configuración Maven
-│   └── README.md         # Documentación del módulo
-├── database-mysql/         # Módulo de migraciones de BD (📄 Utilidades)
-│   ├── src/               # Scripts Liquibase
-│   ├── pom.xml           # Dependencias Liquibase y MySQL
-│   └── README.md         # Documentación del módulo
+│   ├── src/                # Código fuente y tests
+│   ├── events/             # Eventos de prueba JSON
+│   ├── template.yaml       # Plantilla SAM
+│   ├── pom.xml             # Configuración Maven
+│   └── README.md           # Documentación del módulo
 ├── .github/workflows/      # CI/CD con GitHub Actions
-├── pom.xml                # POM padre con configuración común
-└── README.md              # Este archivo
+├── pom.xml                 # POM padre con configuración común
+└── README.md               # Este archivo
 ```
 
 ## Limpieza
