@@ -7,6 +7,13 @@ on:
         required: true
         type: string
 
+  workflow_dispatch:
+    inputs:
+      module_name:
+        description: 'Nombre del módulo a construir y probar'
+        required: true
+        type: string
+
 jobs:
   build-and-test-and-sonar:
     runs-on: ubuntu-latest
