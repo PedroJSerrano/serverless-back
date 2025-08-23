@@ -1,3 +1,5 @@
 spring:
   messages:
     basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
