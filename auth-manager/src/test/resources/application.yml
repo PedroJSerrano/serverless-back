@@ -1,0 +1,10 @@
+aws:
+  region:
+    static: 'eu-west-1'
+  credentials:
+    access-key: 'test'
+    secret-key: 'test'
+
+spring:
+  messages:
+    basename: i18n/messages
