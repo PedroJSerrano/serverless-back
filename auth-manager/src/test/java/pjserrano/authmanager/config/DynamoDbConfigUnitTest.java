@@ -1,3 +1,4 @@
+
 package pjserrano.authmanager.config;
 
 import org.junit.jupiter.api.Test;
