@@ -64,7 +64,7 @@ class LoginApiFunctionsUnitTest {
         LoginRequest loginRequest = new LoginRequest("invalid@user.com", "wrongpassword");
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
-                .thenThrow(new InvalidCredentialsException("Invalid credentials"));
+                .thenThrow(new InvalidCredentialsException());
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
@@ -78,7 +78,7 @@ class LoginApiFunctionsUnitTest {
         LoginRequest loginRequest = new LoginRequest(null, null);
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
-                .thenThrow(new InvalidCredentialsException("Invalid credentials"));
+                .thenThrow(new InvalidCredentialsException());
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
@@ -113,7 +113,7 @@ class LoginApiFunctionsUnitTest {
         LoginRequest loginRequest = new LoginRequest("", "");
 
         when(mockLoginUserUseCase.apply(any(ValidateUserCommand.class)))
-                .thenThrow(new InvalidCredentialsException("Empty credentials"));
+                .thenThrow(new InvalidCredentialsException());
 
         // WHEN & THEN
         assertThrows(InvalidCredentialsException.class, () -> loginFunction.apply(loginRequest));
