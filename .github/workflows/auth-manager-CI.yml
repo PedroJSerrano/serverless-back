@@ -1,58 +1,16 @@
-name: Workflow de CI de auth-manager
-
+name: CI de auth-manager
 on:
   push:
     branches:
       - develop
-    paths:
-      - 'auth-manager/**'
-      - 'pom.xml'
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
       - master
+      - 'feature/**'
     paths:
       - 'auth-manager/**'
       - 'pom.xml'
-
-  workflow_dispatch:
 
 jobs:
-  build-and-test-and-sonar:
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configurar Java JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          server-id: github
-          cache: 'maven'
-
-      - name: Ejecutar Tests Unitarios
-        run: |
-          cd auth-manager
-          mvn -B clean test -Dtest="**/*UnitTest"
-
-      - name: Subir Informes de Pruebas
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: surefire-reports
-          path: 'auth-manager/**/target/surefire-reports'
-
-      - name: Subir artefactos de build
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-artefactos-build
-          path: target/*.jar
+  call-ci-workflow:
+    uses: ./.github/workflows/reusable-ci.yml@master # O la rama donde tengas el reusable
+    with:
+      module_name: 'auth-manager'

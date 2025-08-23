@@ -43,10 +43,8 @@ class SecurityAdapterConfigUnitTest {
         tokenServicePort = securityAdapterConfig.jwtTokenServiceAdapter(mockJwtSecretProvider);
     }
 
-    // Verifica la generación correcta de token JWT con claims válidos
     @Test
     void whenJwtTokenIsGenerated_thenClaimsAreCorrect() {
-        // GIVEN
         String username = "testuser";
         String password = "testpass";
         List<String> roles = List.of("USER", "ADMIN");
@@ -54,10 +52,8 @@ class SecurityAdapterConfigUnitTest {
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
-        // WHEN
         String token = tokenServicePort.apply(user);
 
-        // THEN
         assertNotNull(token);
         assertFalse(token.isEmpty());
 
@@ -75,19 +71,15 @@ class SecurityAdapterConfigUnitTest {
         assertTrue(expiryTime <= now + JWT_EXPIRATION + 1000); // +1s tolerancia
     }
 
-    // Verifica el manejo de usuarios con roles múltiples
     @Test
     void whenUserHasMultipleRoles_thenAllRolesAreIncludedInToken() {
-        // GIVEN
         User user = new User("admin", "adminpass",
             List.of("USER", "ADMIN", "MODERATOR"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
-        // WHEN
         String token = tokenServicePort.apply(user);
 
-        // THEN
         Jws<Claims> jws = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(MOCK_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -101,18 +93,14 @@ class SecurityAdapterConfigUnitTest {
         assertTrue(tokenRoles.contains("MODERATOR"));
     }
 
-    // Verifica el manejo de usuarios sin roles
     @Test
     void whenUserHasNoRoles_thenEmptyRolesListInToken() {
-        // GIVEN
         User user = new User("basicuser", "basicpass", List.of());
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
-        // WHEN
         String token = tokenServicePort.apply(user);
 
-        // THEN
         Jws<Claims> jws = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(MOCK_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -124,18 +112,14 @@ class SecurityAdapterConfigUnitTest {
         assertTrue(tokenRoles.isEmpty());
     }
 
-    // Verifica que se incluyen las fechas de emisión y expiración
     @Test
     void whenTokenIsGenerated_thenIssuedAtAndExpirationAreSet() {
-        // GIVEN
         User user = new User("timeuser", "timepass", List.of("USER"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
-        // WHEN
         String token = tokenServicePort.apply(user);
 
-        // THEN
         Jws<Claims> jws = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(MOCK_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -155,7 +139,6 @@ class SecurityAdapterConfigUnitTest {
         assertTrue(expiration > System.currentTimeMillis(), "Token should not be expired yet");
     }
 
-    // Verifica que diferentes usuarios generan tokens diferentes
     @Test
     void whenDifferentUsers_thenDifferentTokensGenerated() {
         // GIVEN
@@ -164,14 +147,11 @@ class SecurityAdapterConfigUnitTest {
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
-        // WHEN
         String token1 = tokenServicePort.apply(user1);
         String token2 = tokenServicePort.apply(user2);
 
-        // THEN
         assertNotEquals(token1, token2);
-        
-        // Verificar que ambos tokens son válidos pero diferentes
+
         Jws<Claims> jws1 = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(MOCK_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()

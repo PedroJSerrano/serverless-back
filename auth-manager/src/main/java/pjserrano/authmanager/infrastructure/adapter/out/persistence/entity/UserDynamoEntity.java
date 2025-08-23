@@ -1,4 +1,4 @@
-package pjserrano.authmanager.infrastructure.adapter.out.persistence.model;
+package pjserrano.authmanager.infrastructure.adapter.out.persistence.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
