@@ -1,0 +1,37 @@
+name: Manual Release with POM Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Nombre del módulo a desplegar'
+        required: true
+        type: choice
+        options:
+          - auth-manager
+          - user-manager
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from POM
+        id: get_version
+        run: |
+          MODULE_NAME="${{ github.event.inputs.module }}"
+          VERSION=$(grep -oP '(?<=<version>).*?(?=</version>)' "${MODULE_NAME}/pom.xml" | head -1)
+          echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Create release tag
+        id: create_tag
+        env:
+          MODULE_NAME: ${{ github.event.inputs.module }}
+          RELEASE_VERSION: ${{ steps.get_version.outputs.module_version }}
+        run: |
+          TAG_NAME="${MODULE_NAME}-${RELEASE_VERSION}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
