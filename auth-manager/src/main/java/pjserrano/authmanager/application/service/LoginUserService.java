@@ -23,6 +23,6 @@ public class LoginUserService {
                     String jwtToken = tokenService.apply(userPrincipal); // Se le pasa el User completo
                     return new ValidateUserResponse(userPrincipal.getUsername(), jwtToken);
                 })
-                .orElseThrow(() -> new InvalidCredentialsException());
+                .orElseThrow(InvalidCredentialsException::new);
     }
 }
