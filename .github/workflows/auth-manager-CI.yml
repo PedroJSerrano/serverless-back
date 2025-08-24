@@ -2,8 +2,6 @@ name: CI de auth-manager
 on:
   push:
     branches:
-      - develop
-      - master
       - 'feature/**'
     paths:
       - 'auth-manager/**'
@@ -12,7 +10,13 @@ on:
     branches:
       - develop
       - master
-      - 'feature/**'
+    paths:
+      - 'auth-manager/**'
+      - 'pom.xml'
+  merge_group:
+    branches:
+      - develop
+      - master
     paths:
       - 'auth-manager/**'
       - 'pom.xml'
