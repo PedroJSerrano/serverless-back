@@ -1,12 +1,12 @@
-package pjserrano.authmanager.config;
+package pjserrano.awscommon.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ssm.SsmClient;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
