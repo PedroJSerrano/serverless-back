@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write # 👈 Se añade permiso para escribir en packages
+      packages: write 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17' # 👈 Asegúrate de que coincida con la versión de tu proyecto
+          java-version: '21'
           distribution: 'temurin'
           cache: maven
 
@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload artifact to GitHub Packages
         id: upload_package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.inputs.module }}-${{ steps.get_version.outputs.module_version }}
           path: ${{ github.event.inputs.module }}/target/*.jar
