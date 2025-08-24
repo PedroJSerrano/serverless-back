@@ -8,6 +8,14 @@ on:
     paths:
       - 'auth-manager/**'
       - 'pom.xml'
+  pull_request:
+    branches:
+      - develop
+      - master
+      - 'feature/**'
+    paths:
+      - 'auth-manager/**'
+      - 'pom.xml'
 
   workflow_dispatch:
 
