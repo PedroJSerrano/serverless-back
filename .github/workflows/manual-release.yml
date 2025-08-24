@@ -16,9 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write # 👈 Se añade permiso para escribir en packages
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # 👈 Asegúrate de que coincida con la versión de tu proyecto
+          distribution: 'temurin'
+          cache: maven
 
       - name: Extract version from POM
         id: get_version
@@ -26,6 +34,10 @@ jobs:
           MODULE_NAME="${{ github.event.inputs.module }}"
           VERSION=$(mvn -f "${MODULE_NAME}/pom.xml" help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Compile and package module
+        id: package_module
+        run: mvn package -f "${{ github.event.inputs.module }}/pom.xml"
 
       - name: Create release tag
         id: create_tag
@@ -51,3 +63,10 @@ jobs:
             Version: ${{ steps.get_version.outputs.module_version }}
           draft: false
           prerelease: false
+
+      - name: Upload artifact to GitHub Packages
+        id: upload_package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.module }}-${{ steps.get_version.outputs.module_version }}
+          path: ${{ github.event.inputs.module }}/target/*.jar
