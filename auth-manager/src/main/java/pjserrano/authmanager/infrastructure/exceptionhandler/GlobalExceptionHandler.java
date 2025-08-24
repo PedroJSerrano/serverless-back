@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, String>> handlerInvalidCredentialsException() {
-        String errorMessage = messageSource.getMessage(InvalidCredentialsException.ERROR_MESSAGE, null, LocaleContextHolder.getLocale());
+        String errorMessage = messageSource.getMessage
+                (InvalidCredentialsException.ERROR_MESSAGE, null, LocaleContextHolder.getLocale());
         Map<String, String> body = Map.of("message", errorMessage);
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
