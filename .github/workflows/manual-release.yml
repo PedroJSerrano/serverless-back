@@ -21,12 +21,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java and Maven
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+          server-id: github # Usado para autenticar con GitHub Packages
 
       - name: Extract version from POM
         id: get_version
@@ -35,9 +36,10 @@ jobs:
           VERSION=$(mvn -f "${MODULE_NAME}/pom.xml" help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Compile and package module
-        id: package_module
-        run: mvn package -f "${{ github.event.inputs.module }}/pom.xml"
+      - name: Deploy to GitHub Packages
+        id: deploy_package
+        run: |
+          mvn deploy -f "${{ github.event.inputs.module }}/pom.xml"
 
       - name: Create release tag
         id: create_tag
@@ -63,10 +65,3 @@ jobs:
             Version: ${{ steps.get_version.outputs.module_version }}
           draft: false
           prerelease: false
-
-      - name: Upload artifact to GitHub Packages
-        id: upload_package
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.event.inputs.module }}-${{ steps.get_version.outputs.module_version }}
-          path: ${{ github.event.inputs.module }}/target/*.jar
