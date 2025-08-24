@@ -14,16 +14,30 @@ on:
 jobs:
   tag-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
       - name: Extract version from POM
         id: get_version
         run: |
           MODULE_NAME="${{ github.event.inputs.module }}"
-          VERSION=$(grep -oP '(?<=<version>).*?(?=</version>)' "${MODULE_NAME}/pom.xml" | head -1)
+          VERSION=$(mvn -f "${MODULE_NAME}/pom.xml" help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Compile and package module
+        id: package_module
+        run: mvn package -f "${{ github.event.inputs.module }}/pom.xml"
 
       - name: Create release tag
         id: create_tag
@@ -35,3 +49,24 @@ jobs:
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           git tag $TAG_NAME
           git push origin $TAG_NAME
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.tag_name }}
+          release_name: ${{ steps.create_tag.outputs.tag_name }}
+          body: |
+            🎉 Release for module ${{ github.event.inputs.module }}
+            Version: ${{ steps.get_version.outputs.module_version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload artifact to GitHub Packages
+        id: upload_package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.module }}-${{ steps.get_version.outputs.module_version }}
+          path: ${{ github.event.inputs.module }}/target/*.jar
