@@ -17,6 +17,10 @@
         <module>user-manager</module>
     </modules>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <!--Sin dependencias ni plugins predefinidos,
     serán manejadas por los modulos hijos.-->
 
