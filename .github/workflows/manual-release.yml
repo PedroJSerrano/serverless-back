@@ -27,7 +27,27 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-          server-id: github # Usado para autenticar con GitHub Packages
+          
+      - name: Inject GitHub SSL Certificate
+        run: |
+          # Descarga el certificado de GitHub y lo añade al cacerts de Java
+          echo | openssl s_client -connect maven.pkg.github.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/github.pem
+          keytool -import -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -alias github-cert -file /tmp/github.pem
+          
+      - name: Configure Maven for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
 
       - name: Extract version from POM
         id: get_version
@@ -37,10 +57,9 @@ jobs:
           echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Deploy to GitHub Packages
-        id: deploy_package
         run: |
-          mvn deploy -f "${{ github.event.inputs.module }}/pom.xml"
-
+          mvn deploy -f "${{ github.event.inputs.module }}/pom.xml" -s ~/.m2/settings.xml
+      
       - name: Create release tag
         id: create_tag
         env:
