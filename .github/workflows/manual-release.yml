@@ -21,45 +21,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Java and Maven
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-          
-      - name: Inject GitHub SSL Certificate
-        run: |
-          # Descarga el certificado de GitHub y lo añade al cacerts de Java
-          echo | openssl s_client -connect maven.pkg.github.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/github.pem
-          keytool -import -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -alias github-cert -file /tmp/github.pem
-          
-      - name: Configure Maven for GitHub Packages
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << EOF
-          <settings>
-            <servers>
-              <server>
-                <id>github</id>
-                <username>${{ github.actor }}</username>
-                <password>${{ secrets.GITHUB_TOKEN }}</password>
-              </server>
-            </servers>
-          </settings>
-          EOF
 
       - name: Extract version from POM
         id: get_version
         run: |
           MODULE_NAME="${{ github.event.inputs.module }}"
+          VERSION=$(grep -oP '(?<=<version>).*?(?=</version>)' "${MODULE_NAME}/pom.xml" | head -1)
           VERSION=$(mvn -f "${MODULE_NAME}/pom.xml" help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "module_version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Deploy to GitHub Packages
-        run: |
-          mvn deploy -f "${{ github.event.inputs.module }}/pom.xml" -s ~/.m2/settings.xml
-      
+      - name: Compile and package module
+        id: package_module
+        run: mvn package -f "${{ github.event.inputs.module }}/pom.xml"
+
       - name: Create release tag
         id: create_tag
         env:
