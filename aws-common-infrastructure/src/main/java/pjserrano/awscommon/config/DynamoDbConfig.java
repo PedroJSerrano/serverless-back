@@ -1,4 +1,4 @@
-package pjserrano.authmanager.config;
+package pjserrano.awscommon.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

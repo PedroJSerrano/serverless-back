@@ -36,6 +36,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Compilar todos los módulos e instalar dependencias internas
+        run: mvn -B clean install -DskipTests
+
       - name: Ejecutar Tests Unitarios
         run: |
           cd ${{ inputs.module_name }}

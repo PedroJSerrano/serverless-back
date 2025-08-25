@@ -15,6 +15,7 @@
     <modules>
         <module>auth-manager</module>
         <module>user-manager</module>
+        <module>aws-common-infrastructure</module>
     </modules>
 
     <properties>
