@@ -36,6 +36,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Generar dependencias internas
+        run: |
+          cd aws-common-infrastructure
+          mvn -B clean install -DskipTests
+
       - name: Ejecutar Tests Unitarios
         run: |
           cd ${{ inputs.module_name }}
