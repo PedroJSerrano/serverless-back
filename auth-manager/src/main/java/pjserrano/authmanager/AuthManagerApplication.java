@@ -8,7 +8,5 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"pjserrano.authmanager", "pjserrano.awscommon"})
 public class AuthManagerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AuthManagerApplication.class, args);
-    }
+    public static void main(String[] args) { SpringApplication.run(AuthManagerApplication.class, args); }
 }
