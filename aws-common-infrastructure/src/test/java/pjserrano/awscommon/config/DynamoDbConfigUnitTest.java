@@ -1,5 +1,4 @@
-
-package pjserrano.authmanager.config;
+package pjserrano.awscommon.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

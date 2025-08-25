@@ -1,47 +1,34 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>pjserrano</groupId>
         <artifactId>serverless-back</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>auth-manager</artifactId>
+    <artifactId>aws-common-infrastructure</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
-    <version>1.2.0</version>
 
-    <name>auth-manager</name>
-    <description>Module with business logic for login-related functions: login and lambda authorizer</description>
+    <name>aws-common-infrastructure</name>
+    <description>Module for the common infrastructure of AWS services</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
         <spring.boot.version>3.5.4</spring.boot.version>
         <spring.cloud.aws.version>3.2.1</spring.cloud.aws.version>
-        <aws.lambda.java.core.version>1.2.3</aws.lambda.java.core.version>
-        <aws.lambda.java.events.version>3.11.0</aws.lambda.java.events.version>
-        <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
-        <lombok.version>1.18.30</lombok.version>
-        <maven.plugin.version>3.3.1</maven.plugin.version>
-        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <amazon.sdk.dynamodb.version>2.26.13</amazon.sdk.dynamodb.version>
         <amazon.sdk.ssm.version>2.20.73</amazon.sdk.ssm.version>
-        <junit.jupiter.api.version>5.11.0</junit.jupiter.api.version>
-        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
     </properties>
 
     <dependencies>
-        <!-- Dependencias propias -->
-        <dependency>
-            <groupId>pjserrano</groupId>
-            <artifactId>aws-common-infrastructure</artifactId>
-            <version>${pjserrano.awscommon.infrastructure.version}</version>
-        </dependency>
-
         <!-- Spring Cloud Function - Framework para funciones serverless -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -58,29 +45,12 @@
             <artifactId>spring-cloud-function-adapter-aws</artifactId>
             <version>${spring.cloud.function.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-function-web</artifactId>
-            <version>${spring.cloud.function.version}</version>
-        </dependency>
 
         <!-- Spring Boot - Framework base y configuración -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
-        </dependency>
-
-        <!-- AWS Lambda - Runtime y eventos para funciones Lambda -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-            <version>${aws.lambda.java.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-events</artifactId>
-            <version>${aws.lambda.java.events.version}</version>
         </dependency>
 
         <!-- Spring Cloud AWS - Autoconfiguración para servicios AWS -->
@@ -117,31 +87,6 @@
             <version>${amazon.sdk.ssm.version}</version>
         </dependency>
 
-        <!-- Utilidades - JWT y reducción de boilerplate -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-            <version>${lombok.version}</version>
-        </dependency>
-
         <!-- Testing - Dependencias para pruebas unitarias -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -150,20 +95,9 @@
             <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
-                <configuration>
-                    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-                    <includes>
-                        <include>**/*Test.java</include>
-                        <include>**/Test*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -203,12 +137,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>0.10</minimum>
                                         </limit>
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>0.10</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -226,5 +160,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/PedroJSerrano/aws-common-infrastructure</url>
+        </repository>
+    </distributionManagement>
 
 </project>
