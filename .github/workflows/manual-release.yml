@@ -10,6 +10,7 @@ on:
         options:
           - auth-manager
           - user-manager
+          - aws-common-infrastructure
 
 jobs:
   tag-and-release:
