@@ -28,6 +28,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Compile all modules and install internal dependencies
+        run: mvn -B clean install -DskipTests
+
       - name: Extract version from POM
         id: get_version
         run: |
