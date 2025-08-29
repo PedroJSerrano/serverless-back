@@ -33,7 +33,7 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          MAIN_CLASS: pjserrano.authmanager.AuthManagerFunctionalApplication
+          MAIN_CLASS: pjserrano.authmanager.AuthManagerConfiguration
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           JWT_EXPIRATION: "3600000"
           # Opcional: Configuración explícita de Spring Cloud AWS
