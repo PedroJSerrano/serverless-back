@@ -18,6 +18,7 @@ public class UserDynamoEntity {
 
     private String username;
     private String password;
+    private String email;
     private List<String> roles;
 
     @DynamoDbPartitionKey

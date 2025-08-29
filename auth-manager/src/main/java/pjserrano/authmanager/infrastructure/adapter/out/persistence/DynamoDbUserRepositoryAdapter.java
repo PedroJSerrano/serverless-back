@@ -45,6 +45,7 @@ public class DynamoDbUserRepositoryAdapter {
                 User user = new User(
                         entity.getUsername(),
                         entity.getPassword(),
+                        entity.getEmail(),
                         entity.getRoles() != null ? new java.util.ArrayList<>(entity.getRoles()) : List.of()
                 );
 
