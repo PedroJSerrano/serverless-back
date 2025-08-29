@@ -38,7 +38,6 @@ Resources:
           MAIN_CLASS: pjserrano.authmanager.AuthManagerConfiguration
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           JWT_EXPIRATION: "3600000"
-          # Opcional: Configuración explícita de Spring Cloud AWS
           SPRING_CLOUD_AWS_REGION_STATIC: !Ref AWS::Region
 
           JAVA_TOOL_OPTIONS: "-XX:+UseSerialGC -Xmx256m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
