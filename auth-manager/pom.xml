@@ -52,7 +52,7 @@
             <version>${spring.cloud.function.version}</version>
         </dependency>
 
-        <!-- Utilidades - JWT y reducción de boilerplate -->
+        <!-- Utilidades - JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -70,6 +70,8 @@
             <scope>runtime</scope>
             <version>${jsonwebtoken.version}</version>
         </dependency>
+
+        <!-- Lombok - Compile time -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

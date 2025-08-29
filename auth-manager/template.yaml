@@ -31,6 +31,8 @@ Resources:
       CodeUri: .
       Architectures:
         - x86_64
+      SnapStart:
+        ApplyOn: PublishedVersions
       Environment:
         Variables:
           MAIN_CLASS: pjserrano.authmanager.AuthManagerConfiguration
@@ -38,6 +40,10 @@ Resources:
           JWT_EXPIRATION: "3600000"
           # Opcional: Configuración explícita de Spring Cloud AWS
           SPRING_CLOUD_AWS_REGION_STATIC: !Ref AWS::Region
+
+          JAVA_TOOL_OPTIONS: "-XX:+UseSerialGC -Xmx256m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+          SPRING_JMX_ENABLED: false
+          SPRING_MAIN_BANNER_MODE: "off"
       Policies:
         # Define una política de IAM explícita para leer el parámetro de SSM
         - Statement:
@@ -59,9 +65,6 @@ Resources:
           Properties:
             Path: /api/login
             Method: POST
-      # Configuración de SnapStart: activa SnapStart para todas las funciones
-      SnapStart:
-        ApplyOn: PublishedVersions
 
 Outputs:
   LoginApiUrl:
