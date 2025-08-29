@@ -47,8 +47,9 @@ class SecurityAdapterConfigUnitTest {
     void whenJwtTokenIsGenerated_thenClaimsAreCorrect() {
         String username = "testuser";
         String password = "testpass";
+        String email = "testuser@mail.com";
         List<String> roles = List.of("USER", "ADMIN");
-        User user = new User(username, password, roles);
+        User user = new User(username, password, email, roles);
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
@@ -74,7 +75,7 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenUserHasMultipleRoles_thenAllRolesAreIncludedInToken() {
         User user = new User("admin", "adminpass",
-            List.of("USER", "ADMIN", "MODERATOR"));
+            "testuser@mail.com", List.of("USER", "ADMIN", "MODERATOR"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
@@ -95,7 +96,7 @@ class SecurityAdapterConfigUnitTest {
 
     @Test
     void whenUserHasNoRoles_thenEmptyRolesListInToken() {
-        User user = new User("basicuser", "basicpass", List.of());
+        User user = new User("basicuser", "basicpass", "testuser@mail.com", List.of());
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
@@ -114,7 +115,7 @@ class SecurityAdapterConfigUnitTest {
 
     @Test
     void whenTokenIsGenerated_thenIssuedAtAndExpirationAreSet() {
-        User user = new User("timeuser", "timepass", List.of("USER"));
+        User user = new User("timeuser", "timepass", "testuser@mail.com", List.of("USER"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 
@@ -142,8 +143,8 @@ class SecurityAdapterConfigUnitTest {
     @Test
     void whenDifferentUsers_thenDifferentTokensGenerated() {
         // GIVEN
-        User user1 = new User("user1", "pass1", List.of("USER"));
-        User user2 = new User("user2", "pass2", List.of("ADMIN"));
+        User user1 = new User("user1", "pass1", "testuser@mail.com", List.of("USER"));
+        User user2 = new User("user2", "pass2", "testuser@mail.com", List.of("ADMIN"));
 
         when(mockJwtSecretProvider.get()).thenReturn(MOCK_SECRET);
 

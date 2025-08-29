@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  serverles-back - auth-manager
+  serverless-back - auth-manager
 
 Globals:
   Function:
@@ -9,9 +9,6 @@ Globals:
     MemorySize: 512
     Timeout: 30
     Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
-    # Configuración de SnapStart: activa SnapStart para todas las funciones
-    SnapStart:
-      ApplyOn: PublishedVersions
 
 Resources:
   # Define la tabla de DynamoDB
@@ -36,7 +33,7 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          MAIN_CLASS: pjserrano.authmanager.AuthManagerApplication
+          MAIN_CLASS: pjserrano.authmanager.AuthManagerConfiguration
           SPRING_CLOUD_FUNCTION_DEFINITION: loginFunction
           JWT_EXPIRATION: "3600000"
           # Opcional: Configuración explícita de Spring Cloud AWS
@@ -62,6 +59,9 @@ Resources:
           Properties:
             Path: /api/login
             Method: POST
+      # Configuración de SnapStart: activa SnapStart para todas las funciones
+      SnapStart:
+        ApplyOn: PublishedVersions
 
 Outputs:
   LoginApiUrl:
