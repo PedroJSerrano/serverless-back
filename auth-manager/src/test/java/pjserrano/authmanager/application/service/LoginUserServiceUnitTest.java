@@ -43,8 +43,9 @@ class LoginUserServiceUnitTest {
     void whenValidCredentials_thenShouldReturnUserSessionWithToken() {
         String username = "testuser";
         String password = "password123";
+        String email = "testuser@mail.com";
         ValidateUserCommand credentials = new ValidateUserCommand(username, password);
-        User user = new User(username, password, List.of("ROLE_USER"));
+        User user = new User(username, password, email, List.of("ROLE_USER"));
         String expectedToken = "mocked.jwt.token";
 
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
@@ -65,9 +66,10 @@ class LoginUserServiceUnitTest {
     void whenInvalidPassword_thenShouldThrowException() {
         String username = "testuser";
         String validPassword = "password123";
+        String email = "testuser@mail.com";
         String invalidPassword = "wrongpassword";
         ValidateUserCommand credentials = new ValidateUserCommand(username, invalidPassword);
-        User user = new User(username, validPassword, List.of("ROLE_USER"));
+        User user = new User(username, validPassword, email, List.of("ROLE_USER"));
 
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
 
@@ -97,8 +99,9 @@ class LoginUserServiceUnitTest {
     void whenUserWithMultipleRoles_thenShouldReturnValidSession() {
         String username = "adminuser";
         String password = "adminpass";
+        String email = "testuser@mail.com";
         ValidateUserCommand credentials = new ValidateUserCommand(username, password);
-        User user = new User(username, password, List.of("ROLE_USER", "ROLE_ADMIN"));
+        User user = new User(username, password, email, List.of("ROLE_USER", "ROLE_ADMIN"));
         String expectedToken = "admin.jwt.token";
 
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
@@ -115,8 +118,9 @@ class LoginUserServiceUnitTest {
     void whenUserWithNoRoles_thenShouldReturnValidSession() {
         String username = "basicuser";
         String password = "basicpass";
+        String email = "testuser@mail.com";
         ValidateUserCommand credentials = new ValidateUserCommand(username, password);
-        User user = new User(username, password, List.of());
+        User user = new User(username, password, email, List.of());
         String expectedToken = "basic.jwt.token";
 
         when(mockUserRepositoryPort.apply(username)).thenReturn(Optional.of(user));
