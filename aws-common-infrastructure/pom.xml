@@ -46,13 +46,6 @@
             <version>${spring.cloud.function.version}</version>
         </dependency>
 
-        <!-- Spring Boot - Framework base y configuración -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-
         <!-- Spring Cloud AWS - Autoconfiguración para servicios AWS -->
         <dependency>
             <groupId>io.awspring.cloud</groupId>

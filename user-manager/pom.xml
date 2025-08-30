@@ -17,23 +17,25 @@
     <description>Module with business logic for functions associated with user management</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
         <spring.boot.version>3.5.4</spring.boot.version>
         <spring.cloud.aws.version>3.2.1</spring.cloud.aws.version>
-        <aws.lambda.java.core.version>1.2.3</aws.lambda.java.core.version>
-        <aws.lambda.java.events.version>3.11.0</aws.lambda.java.events.version>
-        <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
         <maven.plugin.version>3.3.1</maven.plugin.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
-        <amazon.sdk.dynamodb.version>2.26.13</amazon.sdk.dynamodb.version>
-        <amazon.sdk.ssm.version>2.20.73</amazon.sdk.ssm.version>
-        <junit.jupiter.api.version>5.13.4</junit.jupiter.api.version>
     </properties>
 
     <dependencies>
+        <!-- Dependencias propias -->
+        <dependency>
+            <groupId>pjserrano</groupId>
+            <artifactId>aws-common-infrastructure</artifactId>
+            <version>${pjserrano.awscommon.infrastructure.version}</version>
+        </dependency>
+
         <!-- Spring Cloud Function - Framework para funciones serverless -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -50,83 +52,8 @@
             <artifactId>spring-cloud-function-adapter-aws</artifactId>
             <version>${spring.cloud.function.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-function-web</artifactId>
-            <version>${spring.cloud.function.version}</version>
-        </dependency>
 
-        <!-- Spring Boot - Framework base y configuración -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-
-        <!-- AWS Lambda - Runtime y eventos para funciones Lambda -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-            <version>${aws.lambda.java.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-events</artifactId>
-            <version>${aws.lambda.java.events.version}</version>
-        </dependency>
-
-        <!-- Spring Cloud AWS - Autoconfiguración para servicios AWS -->
-        <dependency>
-            <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-aws-starter</artifactId>
-            <version>${spring.cloud.aws.version}</version>
-        </dependency>
-
-        <!-- AWS SDK - Servicios de AWS (DynamoDB, SSM) -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb</artifactId>
-            <version>${amazon.sdk.dynamodb.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb-enhanced</artifactId>
-            <version>${amazon.sdk.dynamodb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>ssm</artifactId>
-            <version>${amazon.sdk.ssm.version}</version>
-        </dependency>
-
-        <!-- Utilidades - JWT y reducción de boilerplate -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
+        <!-- Utilidades - Reducción de boilerplate -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -140,12 +67,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
             <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.jupiter.api.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -162,7 +83,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>pjserrano.authmanager.AuthManagerApplication</mainClass>
+                    <mainClass>pjserrano.usermanager.UserManagerConfiguration</mainClass>
                 </configuration>
             </plugin>
             <plugin>

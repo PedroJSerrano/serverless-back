@@ -19,7 +19,7 @@ public class LoginApiFunctions {
     private final LoginUserUseCase loginUserUseCase;
 
     @Bean
-    public Function<LoginRequest, ResponseEntity<LoginResponse>> loginFunction() {
+    public Function<LoginRequest, ResponseEntity<LoginResponse>> login() {
         return request -> {
             ValidateUserCommand credentials = new ValidateUserCommand(request.getUsername(), request.getPassword());
 
