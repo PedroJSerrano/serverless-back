@@ -34,7 +34,7 @@ class LoginApiFunctionsUnitTest {
     @BeforeEach
     void setUp() {
         LoginApiFunctions loginApiFunctions = new LoginApiFunctions(mockLoginUserUseCase);
-        this.loginFunction = loginApiFunctions.login();
+        this.loginFunction = loginApiFunctions.login_old();
     }
 
     @Test

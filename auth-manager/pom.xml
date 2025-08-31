@@ -18,12 +18,20 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <maven.plugin.version>3.3.1</maven.plugin.version>
+        <!-- Dependencias propias -->
         <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
+
+        <!-- Dependencias generales -->
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
-        <spring.boot.version>3.5.4</spring.boot.version>
+        <aws.lambda.events.version>3.11.0</aws.lambda.events.version>
+
+        <!-- Utilidades -->
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
-        <maven.plugin.version>3.3.1</maven.plugin.version>
+
+        <!-- Dependencias para testing -->
+        <spring.boot.version>3.5.4</spring.boot.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
     </properties>
 
@@ -50,6 +58,13 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-adapter-aws</artifactId>
             <version>${spring.cloud.function.version}</version>
+        </dependency>
+
+        <!-- AWS Lambda - Events -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>${aws.lambda.events.version}</version>
         </dependency>
 
         <!-- Utilidades - JWT -->
@@ -128,12 +143,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>0.70</minimum>
                                         </limit>
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>0.70</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

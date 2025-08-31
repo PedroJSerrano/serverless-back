@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: 'serverless-fullstack-app - auth-manager'
+Parameters:
+  ApiId:
+    Type: String
+    Default: !ImportValue "serverless-fullstack-app-ApiId"
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups: []
@@ -34,19 +38,23 @@ Resources:
       CodeUri: .
       Architectures:
         - x86_64
-      AutoPublishAlias: live
-      DeploymentPreference:
-        Type: AllAtOnce
       SnapStart:
         ApplyOn: PublishedVersions
+      AutoPublishAlias: live
+      Events:
+        LoginApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ServerlessHttpApi  # En lugar de !Ref ApiId
+            Path: /login
+            Method: POST
       Environment:
         Variables:
           MAIN_CLASS: pjserrano.authmanager.AuthManagerConfiguration
           SPRING_CLOUD_FUNCTION_DEFINITION: login
           JWT_EXPIRATION: "3600000"
           SPRING_CLOUD_AWS_REGION_STATIC: !Ref AWS::Region
-
-          JAVA_TOOL_OPTIONS: "-XX:+UseSerialGC -Xmx256m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+          JAVA_TOOL_OPTIONS: "-XX:+UseSerialGC -Xmx512m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
           SPRING_JMX_ENABLED: false
           SPRING_MAIN_BANNER_MODE: "off"
       Policies:
@@ -62,39 +70,13 @@ Resources:
               Action:
                 - "dynamodb:GetItem"
               Resource: !ImportValue "serverless-fullstack-app-UsersTableArn"
-  LoginFunctionPermission:
-    Type: AWS::Lambda::Permission
+  ServerlessHttpApi:
+    Type: AWS::Serverless::HttpApi
     Properties:
-      FunctionName: !Sub "${LoginFunction}:live"
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub
-        - "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*"
-        - ApiId: !ImportValue "serverless-fullstack-app-ApiId"
-  LoginResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
-      ParentId: !ImportValue "serverless-fullstack-app-ApiRootResourceId"
-      PathPart: login
-  LoginMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
-      ResourceId: !Ref LoginResource
-      HttpMethod: POST
-      AuthorizationType: NONE
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LoginFunction}:live/invocations"
-  LoginApiDeployment:
-    Type: AWS::ApiGateway::Deployment
-    DependsOn:
-      - LoginMethod
-    Properties:
-      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
       StageName: dev
+      Tags:
+        awsApplication: serverless-fullstack-app
+        Module: auth-manager
 Outputs:
   LoginApiUrl:
     Description: "API Gateway endpoint URL for Login Function"
