@@ -23,6 +23,24 @@ Resources:
       Resource: !Ref AWS::StackId
       ResourceType: CFN_STACK
 
+  ServerlessApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: serverless-fullstack-api
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Tags:
+        - Key: awsApplication
+          Value: serverless-fullstack-app
+        - Key: Module
+          Value: shared-infrastructure
+        - Key: Environment
+          Value: dev
+        - Key: Owner
+          Value: pjserrano
+        - Key: Architecture
+          Value: hexagonal
   # Tabla compartida de usuarios
   UsersTable:
     Type: AWS::DynamoDB::Table
@@ -40,16 +58,29 @@ Resources:
           Value: serverless-fullstack-app
         - Key: Module
           Value: shared-infrastructure
-
 Outputs:
   UsersTableArn:
     Description: "ARN de tabla users compartida"
     Value: !GetAtt UsersTable.Arn
     Export:
       Name: !Sub "${AWS::StackName}-UsersTableArn"
-
   UsersTableName:
     Description: "Nombre de tabla users compartida"
     Value: !Ref UsersTable
     Export:
       Name: !Sub "${AWS::StackName}-UsersTableName"
+  ApiUrl:
+    Description: "API Gateway base URL"
+    Value: !Sub "https://${ServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/dev"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"
+  ApiId:
+    Description: "API Gateway ID"
+    Value: !Ref ServerlessApi
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiId"
+  ApiRootResourceId:
+    Description: "API Gateway Root Resource ID"
+    Value: !GetAtt ServerlessApi.RootResourceId
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiRootResourceId"

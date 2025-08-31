@@ -61,14 +61,48 @@ Resources:
               Effect: Allow
               Action:
                 - "dynamodb:GetItem"
-              Resource: !ImportValue "serverless-back-UsersTableArn"
-      Events:
-        LoginApi:
-          Type: HttpApi
-          Properties:
-            Path: /api/login
-            Method: POST
+              Resource: !ImportValue "serverless-fullstack-app-UsersTableArn"
+  LoginFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Sub "${LoginFunction}:live"
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub
+        - "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*"
+        - ApiId: !ImportValue "serverless-fullstack-app-ApiId"
+  LoginResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
+      ParentId: !ImportValue "serverless-fullstack-app-ApiRootResourceId"
+      PathPart: login
+  LoginMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
+      ResourceId: !Ref LoginResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LoginFunction}:live/invocations"
+  LoginApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - LoginMethod
+    Properties:
+      RestApiId: !ImportValue "serverless-fullstack-app-ApiId"
+      StageName: dev
 Outputs:
   LoginApiUrl:
     Description: "API Gateway endpoint URL for Login Function"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/login"
+    Value: !Sub
+      - "${ApiUrl}/login"
+      - ApiUrl: !ImportValue "serverless-fullstack-app-ApiUrl"
+  LoginFunctionArn:
+    Description: "ARN de la función Login"
+    Value: !GetAtt LoginFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-LoginFunctionArn"

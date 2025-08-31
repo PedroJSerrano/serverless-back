@@ -1,9 +1,9 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "serverless-back"
+stack_name = "serverless-fullstack-app"
 resolve_s3 = true
-s3_prefix = "serverless-back"
+s3_prefix = "serverless-fullstack-app"
 region = "eu-west-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
