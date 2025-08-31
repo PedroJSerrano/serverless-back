@@ -24,15 +24,23 @@ Resources:
       ResourceType: CFN_STACK
 
   ServerlessApi:
-    Type: AWS::Serverless::HttpApi
+    Type: AWS::ApiGateway::RestApi
     Properties:
-      StageName: dev
+      Name: serverless-fullstack-api
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
       Tags:
-        awsApplication: serverless-fullstack-app
-        Module: shared-infrastructure
-        Type: api-gateway
-        Environment: dev
-
+        - Key: awsApplication
+          Value: serverless-fullstack-app
+        - Key: Module
+          Value: shared-infrastructure
+        - Key: Environment
+          Value: dev
+        - Key: Owner
+          Value: pjserrano
+        - Key: Architecture
+          Value: hexagonal
   # Tabla compartida de usuarios
   UsersTable:
     Type: AWS::DynamoDB::Table
@@ -71,3 +79,8 @@ Outputs:
     Value: !Ref ServerlessApi
     Export:
       Name: !Sub "${AWS::StackName}-ApiId"
+  ApiRootResourceId:
+    Description: "API Gateway Root Resource ID"
+    Value: !GetAtt ServerlessApi.RootResourceId
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiRootResourceId"
