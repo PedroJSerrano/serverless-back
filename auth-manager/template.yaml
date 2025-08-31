@@ -61,14 +61,38 @@ Resources:
               Effect: Allow
               Action:
                 - "dynamodb:GetItem"
-              Resource: !ImportValue "serverless-back-UsersTableArn"
-      Events:
-        LoginApi:
-          Type: HttpApi
-          Properties:
-            Path: /api/login
-            Method: POST
+              Resource: !ImportValue "serverless-fullstack-app-UsersTableArn"
+  LoginFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LoginFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub
+        - "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*"
+        - ApiId: !ImportValue "serverless-fullstack-app-ApiId"
+  LoginApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !ImportValue "serverless-fullstack-app-ApiId"
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LoginFunction}:live"
+      PayloadFormatVersion: "2.0"
+  LoginApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !ImportValue "serverless-fullstack-app-ApiId"
+      RouteKey: "POST /login"
+      Target: !Sub "integrations/${LoginApiIntegration}"
+
 Outputs:
   LoginApiUrl:
     Description: "API Gateway endpoint URL for Login Function"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/login"
+    Value: !Sub
+      - "${ApiUrl}/login"
+      - ApiUrl: !ImportValue "serverless-fullstack-app-ApiUrl"
+  LoginFunctionArn:
+    Description: "ARN de la función Login"
+    Value: !GetAtt LoginFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-LoginFunctionArn"

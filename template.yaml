@@ -23,6 +23,16 @@ Resources:
       Resource: !Ref AWS::StackId
       ResourceType: CFN_STACK
 
+  ServerlessApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: dev
+      Tags:
+        awsApplication: serverless-fullstack-app
+        Module: shared-infrastructure
+        Type: api-gateway
+        Environment: dev
+
   # Tabla compartida de usuarios
   UsersTable:
     Type: AWS::DynamoDB::Table
@@ -40,16 +50,24 @@ Resources:
           Value: serverless-fullstack-app
         - Key: Module
           Value: shared-infrastructure
-
 Outputs:
   UsersTableArn:
     Description: "ARN de tabla users compartida"
     Value: !GetAtt UsersTable.Arn
     Export:
       Name: !Sub "${AWS::StackName}-UsersTableArn"
-
   UsersTableName:
     Description: "Nombre de tabla users compartida"
     Value: !Ref UsersTable
     Export:
       Name: !Sub "${AWS::StackName}-UsersTableName"
+  ApiUrl:
+    Description: "API Gateway base URL"
+    Value: !Sub "https://${ServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/dev"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"
+  ApiId:
+    Description: "API Gateway ID"
+    Value: !Ref ServerlessApi
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiId"
