@@ -19,54 +19,49 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
-        <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
-        <spring.boot.version>3.5.4</spring.boot.version>
-        <spring.cloud.aws.version>3.2.1</spring.cloud.aws.version>
-        <lombok.version>1.18.30</lombok.version>
-        <maven.plugin.version>3.3.1</maven.plugin.version>
-        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!-- Dependencias propias -->
         <dependency>
             <groupId>pjserrano</groupId>
             <artifactId>aws-common-infrastructure</artifactId>
-            <version>${pjserrano.awscommon.infrastructure.version}</version>
         </dependency>
 
         <!-- Spring Cloud Function - Framework para funciones serverless -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-core</artifactId>
-            <version>${spring.cloud.function.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-context</artifactId>
-            <version>${spring.cloud.function.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-adapter-aws</artifactId>
-            <version>${spring.cloud.function.version}</version>
         </dependency>
 
         <!-- Utilidades - Reducción de boilerplate -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-            <version>${lombok.version}</version>
         </dependency>
 
         <!-- Testing - Dependencias para pruebas unitarias -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -74,77 +69,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>pjserrano.usermanager.UserManagerConfiguration</mainClass>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>jacoco-prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*Configuration.*</exclude>
-                                <exclude>**/domain/**/model/**</exclude>
-                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/out/persistence/model/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>jacoco-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
-                                        </limit>
-                                        <limit>
-                                            <counter>METHOD</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                            <excludes>
-                                <exclude>**/*Configuration.*</exclude>
-                                <exclude>**/domain/model/**</exclude>
-                                <exclude>**/domain/port/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/out/persistence/entity/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

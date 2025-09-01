@@ -18,136 +18,136 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
-        <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
-        <spring.boot.version>3.5.4</spring.boot.version>
-        <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
-        <lombok.version>1.18.30</lombok.version>
-        <maven.plugin.version>3.3.1</maven.plugin.version>
-        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>-->
+
         <!-- Dependencias propias -->
         <dependency>
             <groupId>pjserrano</groupId>
             <artifactId>aws-common-infrastructure</artifactId>
-            <version>${pjserrano.awscommon.infrastructure.version}</version>
         </dependency>
 
-        <!-- Spring Cloud Function - Framework para funciones serverless -->
+        <!-- Spring Cloud Function AWS -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-function-adapter-aws</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-core</artifactId>
-            <version>${spring.cloud.function.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-function-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-function-context</artifactId>
-            <version>${spring.cloud.function.version}</version>
+        </dependency>
+
+        <!-- AWS Lambda - Events -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+        </dependency>
+
+        <!-- Jackson - Dependencias explícitas para Lambda -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-function-adapter-aws</artifactId>
-            <version>${spring.cloud.function.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
 
         <!-- Utilidades - JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>${jsonwebtoken.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <scope>runtime</scope>
-            <version>${jsonwebtoken.version}</version>
         </dependency>
 
         <!-- Lombok - Compile time -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-            <version>${lombok.version}</version>
         </dependency>
 
         <!-- Testing - Dependencias para pruebas unitarias -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.maven.plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
-                        <id>jacoco-prepare-agent</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <excludes>
-                                <exclude>**/*Configuration.*</exclude>
-                                <exclude>**/domain/**/model/**</exclude>
-                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/out/persistence/model/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>jacoco-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                        <limit>
-                                            <counter>METHOD</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                            <excludes>
-                                <exclude>**/*Configuration.*</exclude>
-                                <exclude>**/domain/model/**</exclude>
-                                <exclude>**/domain/port/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/in/web/dto/**</exclude>
-                                <exclude>**/infrastructure/adapter/out/persistence/entity/**</exclude>
-                            </excludes>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>**/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.springframework.boot:spring-boot-starter-tomcat</artifact>
+                                    <excludes>
+                                        <exclude>**</exclude> <!-- Excluir Tomcat para Lambda -->
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>pjserrano.authmanager.AuthManagerConfiguration</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
