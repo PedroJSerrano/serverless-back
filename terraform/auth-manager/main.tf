@@ -47,5 +47,6 @@ module "login_function" {
     Module         = "auth-manager"
     Owner          = "pjserrano"
     Architecture   = "hexagonal"
+    applicationName = "serverless-fullstack-app"
   }
 }
