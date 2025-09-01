@@ -8,6 +8,7 @@ resource "aws_servicecatalogappregistry_application" "main" {
     Environment    = var.environment
     Owner          = "pjserrano"
     Architecture   = "hexagonal"
+    applicationName = "serverless-fullstack-app"
   }
 }
 
@@ -28,6 +29,7 @@ resource "aws_dynamodb_table" "users" {
     Module         = "shared-infrastructure"
     Owner          = "pjserrano"
     Architecture   = "hexagonal"
+    applicationName = "serverless-fullstack-app"
   }
 }
 
@@ -42,6 +44,7 @@ resource "aws_apigatewayv2_api" "main" {
     Module         = "shared-infrastructure"
     Owner          = "pjserrano"
     Architecture   = "hexagonal"
+    applicationName = "serverless-fullstack-app"
   }
 }
 
@@ -56,5 +59,6 @@ resource "aws_apigatewayv2_stage" "dev" {
     Environment    = var.environment
     Module         = "shared-infrastructure"
     Owner          = "pjserrano"
+    applicationName = "serverless-fullstack-app"
   }
 }
