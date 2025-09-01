@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class LoginApiV2Function {
+public class LoginApiFunction {
 
     private final LoginUserUseCase loginUserUseCase;
     private final ObjectMapper objectMapper = new ObjectMapper();
