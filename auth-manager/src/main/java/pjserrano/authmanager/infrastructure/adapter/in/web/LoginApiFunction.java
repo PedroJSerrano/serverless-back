@@ -25,16 +25,13 @@ public class LoginApiFunction {
     public Function<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> login() {
         return event -> {
             try {
-                // Extraer body del evento HTTP
                 LoginRequest request = objectMapper.readValue(event.getBody(), LoginRequest.class);
 
-                // Usar la lógica existente
                 ValidateUserCommand credentials = new ValidateUserCommand(request.getUsername(), request.getPassword());
                 var response = loginUserUseCase.apply(credentials);
 
                 LoginResponse loginResponse = new LoginResponse(response.getUserId(), response.getJwtToken());
 
-                // Crear respuesta HTTP API v2.0
                 return APIGatewayV2HTTPResponse.builder()
                         .withStatusCode(200)
                         .withHeaders(Map.of("Content-Type", "application/json"))

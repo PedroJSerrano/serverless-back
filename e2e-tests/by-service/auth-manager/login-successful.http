@@ -1,0 +1,23 @@
+### Inicio de sesión y guardado de token jwt
+
+POST {{host}}/{{stageName}}/login
+Content-Type: application/json
+
+{
+  "username" : "testuser",
+  "password" : "pwdtestuser"
+}
+
+> {%
+    // Script para guardar el token de la respuesta
+    // Capturamos el token
+    const token = response.body.jwtToken;
+
+    // Test para verificar que el token no es nulo o vacío
+    client.test("El token JWT se ha capturado correctamente", function() {
+        client.assert(token !== null && token.length > 0, "El token no puede ser nulo o vacío");
+    });
+
+    // Guardamos en variable global
+    client.global.set("jwt_token", token);
+ %}
