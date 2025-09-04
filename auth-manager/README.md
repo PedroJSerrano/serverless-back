@@ -11,7 +11,7 @@ Módulo de autenticación de usuarios que proporciona funcionalidad de login con
 
 ## API Endpoints
 
-### POST /api/login
+### POST /login
 Autentica un usuario y devuelve un token JWT.
 
 **Request:**
@@ -79,7 +79,7 @@ Implementa **arquitectura hexagonal** con separación clara de responsabilidades
 - 🚧 **Lambda Authorizer:** `AuthorizerFunction` (en construcción)
 - **DynamoDB Table:** `users`
 - **SSM Parameter:** `/login/jwt/secret`
-- **API Gateway:** Endpoint HTTP POST `/api/login`
+- **API Gateway:** Endpoint HTTP POST `/login`
 
 ## Variables de Entorno
 
@@ -93,9 +93,9 @@ Implementa **arquitectura hexagonal** con separación clara de responsabilidades
 # Construir el módulo
 mvn clean package
 
-# Desplegar
-sam build
-sam deploy --guided
+# Desplegar con Terraform (desde raíz del proyecto)
+cd ../terraform
+terraform apply
 ```
 
 ## Testing
@@ -104,7 +104,6 @@ El módulo cuenta con **cobertura completa de tests** (>90% en todas las métric
 
 ### Estructura de Tests
 - **Tests Unitarios**: Verifican lógica de negocio con mocks
-- **Tests de Integración**: Verifican configuración Spring con mocks (sin dependencias externas)
 
 ### Clases de Test por Componente
 ```
@@ -134,8 +133,7 @@ mvn verify
 # Ejecutar solo tests unitarios
 mvn test -Dtest="**/*UnitTest"
 
-# Ejecutar solo tests de integración
-mvn test -Dtest="**/*IntegrationTest"
+
 
 ```
 
@@ -144,26 +142,21 @@ mvn test -Dtest="**/*IntegrationTest"
 ### Prerrequisitos
 - **Java 21**
 - **Maven 3.8+**
-- **SAM CLI**
-- **Configuración AWS** (para tests de producción y despliegue)
+- **Terraform** (para despliegue)
+- **AWS CLI** configurado
+- **Credenciales AWS** (para despliegue)
 
 ### Comandos de Desarrollo
 ```bash
 # Construir el módulo
 mvn clean compile
 
-# Ejecutar todos los tests (unitarios + integración)
+# Ejecutar todos los tests
 mvn test
 
-
-# Ejecutar función localmente
-sam local invoke LoginFunction --event ../events/event-login-successful.json
-
-# Ejecutar API localmente
-sam local start-api
-curl -X POST http://localhost:3000/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test","password":"test"}'
+# Testing E2E con HTTP Client
+# Usar archivos .http en ../e2e-tests/by-service/auth-manager/
+# Configurar entorno en ../e2e-tests/http-client.env.json
 ```
 
 ## Tecnologías Utilizadas

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pjserrano</groupId>
+    <groupId>dev.pedroenlanube</groupId>
     <artifactId>serverless-back</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
@@ -25,7 +25,7 @@
         <maven.plugin.version>3.3.1</maven.plugin.version>
         <org.maven.plugin.version>3.11.0</org.maven.plugin.version>
         <!-- Dependencias propias -->
-        <pjserrano.awscommon.infrastructure.version>1.0.0</pjserrano.awscommon.infrastructure.version>
+        <pedronube.awscommon.infrastructure.version>1.1.0</pedronube.awscommon.infrastructure.version>
 
         <!-- Dependencias generales -->
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
@@ -68,9 +68,9 @@
 
             <!-- Dependencias propias -->
             <dependency>
-                <groupId>pjserrano</groupId>
+                <groupId>dev.pedroenlanube</groupId>
                 <artifactId>aws-common-infrastructure</artifactId>
-                <version>${pjserrano.awscommon.infrastructure.version}</version>
+                <version>${pedronube.awscommon.infrastructure.version}</version>
             </dependency>
 
             <!-- Spring Cloud Function AWS -->

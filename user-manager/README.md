@@ -44,9 +44,9 @@ Módulo de gestión de usuarios que proporciona operaciones CRUD para la adminis
 # Construir el módulo
 mvn clean package
 
-# Desplegar
-sam build
-sam deploy --guided
+# Desplegar con Terraform (desde raíz del proyecto)
+cd ../terraform
+terraform apply
 ```
 
 ## Testing

@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>pjserrano</groupId>
+        <groupId>dev.pedroenlanube</groupId>
         <artifactId>serverless-back</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
@@ -18,7 +18,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <lambda.main.class>pjserrano.authmanager.AuthManagerConfiguration</lambda.main.class>
+        <lambda.main.class>dev.pedronube.authmanager.AuthManagerConfiguration</lambda.main.class>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
 
         <!-- Dependencias propias -->
         <dependency>
-            <groupId>pjserrano</groupId>
+            <groupId>dev.pedroenlanube</groupId>
             <artifactId>aws-common-infrastructure</artifactId>
         </dependency>
 

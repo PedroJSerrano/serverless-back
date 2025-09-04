@@ -19,7 +19,7 @@ module "login_function" {
   http_method       = "POST"
   
   environment_variables = {
-    MAIN_CLASS                        = "pjserrano.authmanager.AuthManagerConfiguration"
+    MAIN_CLASS                        = "dev.pedroenlanube.authmanager.AuthManagerConfiguration"
     SPRING_CLOUD_FUNCTION_DEFINITION  = "login"
     JWT_EXPIRATION                    = "3600000"
     SPRING_CLOUD_AWS_REGION_STATIC    = data.aws_region.current.name
@@ -45,7 +45,7 @@ module "login_function" {
     awsApplication = var.project_name
     Environment    = var.environment
     Module         = "auth-manager"
-    Owner          = "pjserrano"
+    Owner          = "pedroenlanube"
     Architecture   = "hexagonal"
     applicationName = "serverless-fullstack-app"
   }

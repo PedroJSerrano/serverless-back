@@ -6,7 +6,7 @@ resource "aws_servicecatalogappregistry_application" "main" {
   tags = {
     awsApplication = var.project_name
     Environment    = var.environment
-    Owner          = "pjserrano"
+    Owner          = "pedroenlanube"
     Architecture   = "hexagonal"
     applicationName = "serverless-fullstack-app"
   }
@@ -27,7 +27,7 @@ resource "aws_dynamodb_table" "users" {
     awsApplication = var.project_name
     Environment    = var.environment
     Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
+    Owner          = "pedroenlanube"
     Architecture   = "hexagonal"
     applicationName = "serverless-fullstack-app"
   }
@@ -42,7 +42,7 @@ resource "aws_apigatewayv2_api" "main" {
     awsApplication = var.project_name
     Environment    = var.environment
     Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
+    Owner          = "pedroenlanube"
     Architecture   = "hexagonal"
     applicationName = "serverless-fullstack-app"
   }
@@ -58,7 +58,7 @@ resource "aws_apigatewayv2_stage" "dev" {
     awsApplication = var.project_name
     Environment    = var.environment
     Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
+    Owner          = "pedroenlanube"
     applicationName = "serverless-fullstack-app"
   }
 }
