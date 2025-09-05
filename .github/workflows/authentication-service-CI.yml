@@ -1,24 +1,24 @@
-name: CI de AWS Common Infrastructure
+name: CI de Authentication Service
 on:
   push:
     branches:
       - 'feature/**'
     paths:
-      - 'aws-common-infrastructure/**'
+      - 'authentication-service/**'
       - 'pom.xml'
   pull_request:
     branches:
       - develop
       - master
     paths:
-      - 'aws-common-infrastructure/**'
+      - 'authentication-service/**'
       - 'pom.xml'
   merge_group:
     branches:
       - develop
       - master
     paths:
-      - 'aws-common-infrastructure/**'
+      - 'authentication-service/**'
       - 'pom.xml'
 
   workflow_dispatch:
@@ -32,4 +32,4 @@ jobs:
   call-ci-workflow:
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      module_name: 'aws-common-infrastructure'
+      module_name: 'authentication-service'

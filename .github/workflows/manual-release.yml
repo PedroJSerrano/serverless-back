@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - auth-manager
-          - user-manager
-          - aws-common-infrastructure
+          - authentication-service
+          - user-management-service
+          - cloud-infrastructure-commons
 
 jobs:
   tag-and-release:

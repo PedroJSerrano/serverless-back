@@ -1,24 +1,24 @@
-name: CI de Auth Manager
+name: CI de Cloud Infrastructure Commons
 on:
   push:
     branches:
       - 'feature/**'
     paths:
-      - 'auth-manager/**'
+      - 'cloud-infrastructure-commons/**'
       - 'pom.xml'
   pull_request:
     branches:
       - develop
       - master
     paths:
-      - 'auth-manager/**'
+      - 'cloud-infrastructure-commons/**'
       - 'pom.xml'
   merge_group:
     branches:
       - develop
       - master
     paths:
-      - 'auth-manager/**'
+      - 'cloud-infrastructure-commons/**'
       - 'pom.xml'
 
   workflow_dispatch:
@@ -32,4 +32,4 @@ jobs:
   call-ci-workflow:
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      module_name: 'auth-manager'
+      module_name: 'cloud-infrastructure-commons'
