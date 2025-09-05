@@ -15,5 +15,5 @@ output "users_table_name" {
 
 output "login_function_arn" {
   description = "Login function ARN"
-  value       = module.auth_manager.login_function_arn
+  value       = module.authentication_service.login_function_arn
 }

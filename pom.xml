@@ -13,9 +13,11 @@
     <description>my serverless app</description>
 
     <modules>
-        <module>auth-manager</module>
-        <module>user-manager</module>
-        <module>aws-common-infrastructure</module>
+        <module>authentication-service</module>
+        <module>user-management-service</module>
+        <module>cloud-infrastructure-commons</module>
+        <module>domain-commons</module>
+        <module>api-documentation-service</module>
     </modules>
 
     <properties>
@@ -25,7 +27,7 @@
         <maven.plugin.version>3.3.1</maven.plugin.version>
         <org.maven.plugin.version>3.11.0</org.maven.plugin.version>
         <!-- Dependencias propias -->
-        <pedronube.awscommon.infrastructure.version>1.1.0</pedronube.awscommon.infrastructure.version>
+        <pedronube.cloud.platform.common.version>1.1.0</pedronube.cloud.platform.common.version>
 
         <!-- Dependencias generales -->
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
@@ -69,8 +71,8 @@
             <!-- Dependencias propias -->
             <dependency>
                 <groupId>dev.pedroenlanube</groupId>
-                <artifactId>aws-common-infrastructure</artifactId>
-                <version>${pedronube.awscommon.infrastructure.version}</version>
+                <artifactId>cloud-platform-commons</artifactId>
+                <version>${pedronube.cloud.platform.common.version}</version>
             </dependency>
 
             <!-- Spring Cloud Function AWS -->

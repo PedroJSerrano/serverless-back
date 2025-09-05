@@ -25,9 +25,9 @@ module "shared_infrastructure" {
   project_name = var.project_name
 }
 
-# Auth Manager
-module "auth_manager" {
-  source = "./auth-manager"
+# Authentication Service
+module "authentication_service" {
+  source = "./authentication-service"
   
   api_id = module.shared_infrastructure.api_id
   api_execution_arn = module.shared_infrastructure.api_execution_arn

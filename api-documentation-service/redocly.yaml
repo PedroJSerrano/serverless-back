@@ -1,0 +1,51 @@
+# api-docs/redocly.yaml
+apis:
+  main:
+    root: ./target/api-fragments/openapi.yaml # Fichero base
+    #x-mixin:
+     # - ../target/api-fragments/user-service/openapi.yaml
+      #- ../target/api-fragments/order-service/openapi.yaml
+
+# ... resto de la configuración ...
+
+#
+# ¡Vale, este es el último paso y es un error simple de corregir!
+#
+#El problema es que estamos usando el comando incorrecto de Redocly para generar un fichero HTML.
+#
+#El comando redocly **bundle** sirve para fusionar varios ficheros YAML/JSON en un único fichero YAML/JSON. No sabe cómo crear un .html.
+#
+#El comando para crear la página web es redocly **build-docs**.
+#
+### La Solución
+#Como ahora mismo solo tienes un fichero openapi.yaml, no necesitas fusionar nada. Puedes generar el HTML directamente.
+#
+#Simplemente cambia la palabra bundle por build-docs y pásale directamente la ruta a tu fichero YAML:
+#
+#Asegúrate de estar en la carpeta api-documentation-service.
+#
+#Ejecuta este comando:
+#
+#Bash
+#
+#redocly build-docs ./target/api-fragments/openapi.yaml -o public/docs.html
+#Este comando leerá tu fichero YAML y lo convertirá en el fichero docs.html que esperas.
+#
+### Para el Futuro (Cuando tengas Múltiples Módulos)
+#Cuando vuelvas a tener varios ficheros que necesites fusionar, el proceso será en dos pasos:
+#
+#Fusionar (Bundle): Primero, fusionas todos los fragmentos en un único fichero de salida. Fíjate que la salida es .yaml, no .html.
+#
+#Bash
+#
+#redocly bundle main -o target/openapi-final.yaml
+#Construir (Build-docs): Luego, construyes el HTML a partir de ese fichero recién creado.
+#
+#Bash
+#
+#redocly build-docs target/openapi-final.yaml -o public/docs.html
+
+
+# redocly build-docs ./target/api-fragments/openapi.yaml --theme.openapi.logo.gutter=./assets/logo-pedroenlanube.png -o public/docs.html
+
+# redocly build-docs ./target/api-fragments/openapi.yaml --theme.openapi.logo.gutter="https://s3.eu-west-1.amazonaws.com/doc.portfolio.pedroenlanube.dev/assets/logo-pedroenlanube.png" -o public/docs.htm
