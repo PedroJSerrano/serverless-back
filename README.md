@@ -31,8 +31,8 @@ Aplicación serverless modular desarrollada con **Java 21** y **arquitectura hex
 
 ## Módulos
 
-### 🔐 [Auth Manager](./auth-manager/README.md) ✅ **Completo**
-Módulo de autenticación que proporciona:
+### 🔐 [Authentication Service](./authentication-service/README.md) ✅ **Completo**
+Plataforma de identidad que proporciona:
 - Validación de credenciales contra DynamoDB
 - Generación de tokens JWT con expiración configurable
 - Integración con AWS Systems Manager para secretos
@@ -41,8 +41,8 @@ Módulo de autenticación que proporciona:
 
 **Tecnologías:** Spring Cloud Function, DynamoDB, SSM, JWT
 
-### 👥 [User Manager](./user-manager/README.md) 🚧 **En desarrollo**
-Módulo de gestión de usuarios que incluirá:
+### 👥 [User Management Service](./user-management-service/README.md) 🚧 **En desarrollo**
+Plataforma de gestión de usuarios que incluirá:
 - Registro de nuevos usuarios (CRUD)
 - Actualización de datos de usuario
 - Eliminación de usuarios
@@ -50,8 +50,8 @@ Módulo de gestión de usuarios que incluirá:
 
 **Tecnologías:** Spring Cloud Function, DynamoDB, JWT
 
-### 📦 [AWS Common Infrastructure](./aws-common-infrastructure/README.md) ✅ **Completo**
-Módulo de utilidades compartidas para integración con AWS:
+### 🌐 [Cloud Infrastructure Commons](./cloud-infrastructure-commons/README.md) ✅ **Completo**
+Plataforma común para integración con servicios cloud:
 - Configuraciones AWS SDK optimizadas para Lambda
 - DynamoDB Enhanced Client
 - Beans y configuraciones reutilizables
@@ -59,7 +59,25 @@ Módulo de utilidades compartidas para integración con AWS:
 
 **Tecnologías:** Spring Boot, AWS SDK v2, DynamoDB Enhanced Client
 
-### 🏗️ [Terraform](./terraform/) ✅ **Completo**
+### 🏢 [Domain Commons](./domain-commons/README.md) 🚧 **En desarrollo**
+Plataforma de dominio compartido:
+- DTOs comunes entre servicios
+- Puertos y casos de uso reutilizables
+- Modelos de dominio compartidos
+- Validaciones de negocio comunes
+
+**Tecnologías:** Spring Boot, Validation API
+
+### 📝 [API Documentation Service](./api-documentation-service/README.md) 🚧 **En desarrollo**
+Servicio de documentación unificada:
+- Agregación de OpenAPI fragments
+- Generación de documentación con Redocly
+- Despliegue automático en S3+CloudFront
+- UI interactiva profesional
+
+**Tecnologías:** OpenAPI 3.0, Redocly, Maven
+
+### 🏗️ [Terraform](./terraform/README.md) ✅ **Completo**
 Infraestructura como código para despliegue en AWS:
 - Módulos reutilizables para Lambda y recursos compartidos
 - Backend remoto en S3 para state management
@@ -68,12 +86,13 @@ Infraestructura como código para despliegue en AWS:
 
 **Tecnologías:** Terraform, AWS Provider
 
-### 🧪 [E2E Tests](./e2e-tests/README.md) ✅ **Completo**
-Tests end-to-end con IntelliJ HTTP Client:
+### ✅ [Acceptance Testing](./acceptance-testing/README.md) ✅ **Completo**
+Tests de aceptación con IntelliJ HTTP Client:
 - Tests organizados por servicio
 - Configuración multi-entorno
 - Captura automática de tokens JWT
 - Validaciones JavaScript
+- Flujos completos de usuario
 
 **Tecnologías:** IntelliJ HTTP Client, JavaScript
 
@@ -89,8 +108,8 @@ graph TB
         end
         
         subgraph "Compute Layer"
-            AL[Auth Manager Lambda]
-            UL[User Manager Lambda]
+            AL[Authentication Service Lambda]
+            UL[User Management Service Lambda]
         end
         
         subgraph "Data Layer"
@@ -254,7 +273,7 @@ Cada módulo se puede desarrollar y probar independientemente:
 ### Testing Unitario
 ```bash
 # Ejecutar tests de un módulo específico
-cd auth-manager
+cd authentication-service
 mvn test
 
 # Ejecutar tests de todos los módulos
@@ -262,7 +281,7 @@ mvn test
 ```
 
 ### Testing E2E
-Utiliza los tests HTTP en `e2e-tests/` con IntelliJ HTTP Client:
+Utiliza los tests HTTP en `acceptance-testing/` con IntelliJ HTTP Client:
 - Configura el entorno en `http-client.env.json`
 - Ejecuta requests desde archivos `.http`
 - Tests automáticos con JavaScript post-request
@@ -293,10 +312,10 @@ Todas las funciones Lambda tienen logs automáticos en CloudWatch:
 
 ```bash
 # Ver logs con AWS CLI
-aws logs tail /aws/lambda/auth-manager-login --follow
+aws logs tail /aws/lambda/authentication-service-login --follow
 
 # Ver logs de un período específico
-aws logs filter-log-events --log-group-name /aws/lambda/auth-manager-login --start-time 1640995200000
+aws logs filter-log-events --log-group-name /aws/lambda/authentication-service-login --start-time 1640995200000
 ```
 
 **Monitorización incluida:**
@@ -309,31 +328,40 @@ aws logs filter-log-events --log-group-name /aws/lambda/auth-manager-login --sta
 
 ```
 serverless-back/
-├── auth-manager/           # Módulo de autenticación (✅ Completo)
-│   ├── src/                # Código fuente y tests
-│   ├── events/             # Eventos de prueba JSON
-│   ├── pom.xml             # Configuración Maven
-│   └── README.md           # Documentación del módulo
-├── user-manager/           # Módulo de gestión de usuarios (🚧 En desarrollo)
-│   ├── src/                # Código fuente y tests
-│   ├── events/             # Eventos de prueba JSON
-│   ├── pom.xml             # Configuración Maven
-│   └── README.md           # Documentación del módulo
-├── aws-common-infrastructure/ # Utilidades compartidas AWS
-│   ├── src/                # Configuraciones y utilidades
-│   ├── pom.xml             # Configuración Maven
-│   └── README.md           # Documentación del módulo
-├── terraform/              # Infrastructure as Code
-│   ├── modules/            # Módulos reutilizables
-│   ├── auth-manager/       # Configuración auth-manager
-│   └── main.tf             # Configuración principal
-├── e2e-tests/              # Tests end-to-end
-│   ├── by-service/         # Tests organizados por servicio
-│   ├── http-client.env.json # Configuración de entornos
-│   └── README.md           # Documentación de E2E tests
-├── .github/workflows/      # CI/CD con GitHub Actions
-├── pom.xml                 # POM padre con configuración común
-└── README.md               # Este archivo
+├── authentication-service/     # Plataforma de identidad (✅ Completo)
+│   ├── src/                    # Código fuente y tests
+│   ├── events/                 # Eventos de prueba JSON
+│   ├── pom.xml                 # Configuración Maven
+│   └── README.md               # Documentación del servicio
+├── user-management-service/    # Plataforma de gestión de usuarios (🚧 En desarrollo)
+│   ├── src/                    # Código fuente y tests
+│   ├── events/                 # Eventos de prueba JSON
+│   ├── pom.xml                 # Configuración Maven
+│   └── README.md               # Documentación del servicio
+├── cloud-infrastructure-commons/ # Plataforma común cloud
+│   ├── src/                    # Configuraciones y utilidades
+│   ├── pom.xml                 # Configuración Maven
+│   └── README.md               # Documentación del módulo
+├── domain-commons/             # Plataforma de dominio compartido
+│   ├── src/                    # DTOs, puertos y casos de uso
+│   ├── pom.xml                 # Configuración Maven
+│   └── README.md               # Documentación del módulo
+├── api-documentation-service/  # Servicio de documentación
+│   ├── src/                    # Agregación y generación
+│   ├── pom.xml                 # Configuración Maven
+│   └── README.md               # Documentación del servicio
+├── terraform/                  # Infrastructure as Code
+│   ├── modules/                # Módulos reutilizables
+│   ├── authentication-service/ # Configuración authentication-service
+│   ├── main.tf                 # Configuración principal
+│   └── README.md               # Documentación de Terraform
+├── acceptance-testing/         # Tests de aceptación
+│   ├── by-service/             # Tests organizados por servicio
+│   ├── http-client.env.json    # Configuración de entornos
+│   └── README.md               # Documentación de tests
+├── .github/workflows/          # CI/CD con GitHub Actions
+├── pom.xml                     # POM padre con configuración común
+└── README.md                   # Este archivo
 ```
 
 ## Limpieza
@@ -403,10 +431,10 @@ aws ssm get-parameter --name "/login/jwt/secret" --with-decryption
 #### Ver logs de Lambda
 ```bash
 # Logs en tiempo real
-aws logs tail /aws/lambda/auth-manager-login --follow
+aws logs tail /aws/lambda/authentication-service-login --follow
 
 # Logs con filtro
-aws logs filter-log-events --log-group-name /aws/lambda/auth-manager-login --filter-pattern "ERROR"
+aws logs filter-log-events --log-group-name /aws/lambda/authentication-service-login --filter-pattern "ERROR"
 ```
 
 #### Testing local

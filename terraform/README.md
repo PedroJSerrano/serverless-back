@@ -9,7 +9,7 @@ terraform/
 ├── modules/                    # Módulos reutilizables
 │   ├── lambda-function/        # Módulo para funciones Lambda
 │   └── shared-infrastructure/  # Recursos compartidos (DynamoDB, API Gateway)
-├── auth-manager/              # Configuración específica auth-manager
+├── authentication-service/    # Configuración específica authentication-service
 │   ├── main.tf
 │   ├── variables.tf
 │   └── outputs.tf
@@ -27,8 +27,8 @@ terraform/
 - **AppRegistry Application** - Organización de recursos AWS
 - **CloudWatch Log Groups** - Logs automáticos para todas las funciones
 
-### Auth Manager
-- **Lambda Function** - `auth-manager-login` con SnapStart habilitado
+### Authentication Service
+- **Lambda Function** - `authentication-service-login` con SnapStart habilitado
 - **API Gateway Integration** - Route `/login` POST
 - **IAM Roles** - Permisos para DynamoDB y SSM
 - **SSM Parameter** - Secreto JWT
