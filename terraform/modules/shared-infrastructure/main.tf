@@ -5,10 +5,9 @@ resource "aws_servicecatalogappregistry_application" "main" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Owner          = "pedroenlanube"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
@@ -25,11 +24,10 @@ resource "aws_dynamodb_table" "users" {
 
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pedroenlanube"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
@@ -40,11 +38,10 @@ resource "aws_apigatewayv2_api" "main" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pedroenlanube"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
@@ -56,9 +53,9 @@ resource "aws_apigatewayv2_stage" "dev" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pedroenlanube"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }

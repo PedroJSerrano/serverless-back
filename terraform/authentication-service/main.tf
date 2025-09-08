@@ -43,10 +43,9 @@ module "login_function" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "authentication-service"
-    Owner          = "pedroenlanube"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Environment"    = var.environment
+    "user:Module"         = "authentication-service"
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }

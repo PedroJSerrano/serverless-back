@@ -7,7 +7,7 @@ terraform {
   }
   
   backend "s3" {
-    bucket = "pedroenlanube-serverless-app-terraform-state"
+    bucket = "dev-pedroenlanube-serverless-web-terraform-state"
     key    = "serverless-back/terraform.tfstate"
     region = "eu-west-1"
   }
