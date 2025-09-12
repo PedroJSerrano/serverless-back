@@ -11,6 +11,9 @@
 
     <artifactId>api-documentation-service</artifactId>
 
+    <name>api-documentation-service</name>
+    <description>Module with HTTP acceptance tests, divided into service tests and user flow tests.</description>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>

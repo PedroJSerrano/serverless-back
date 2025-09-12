@@ -86,8 +86,10 @@ resource "aws_iam_role_policy" "lambda_custom" {
   })
 }
 
-# API Gateway Integration
+# API Gateway Integration (only if api_id is provided)
 resource "aws_apigatewayv2_integration" "this" {
+  count = var.api_id != "" ? 1 : 0
+  
   api_id           = var.api_id
   integration_type = "AWS_PROXY"
   integration_uri  = aws_lambda_alias.live.invoke_arn
@@ -95,15 +97,19 @@ resource "aws_apigatewayv2_integration" "this" {
   payload_format_version = "2.0"
 }
 
-# API Gateway Route
+# API Gateway Route (only if api_id is provided)
 resource "aws_apigatewayv2_route" "this" {
+  count = var.api_id != "" ? 1 : 0
+  
   api_id    = var.api_id
   route_key = "${var.http_method} ${var.route_path}"
-  target    = "integrations/${aws_apigatewayv2_integration.this.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.this[0].id}"
 }
 
-# Lambda Permission for API Gateway
+# Lambda Permission for API Gateway (only if api_id is provided)
 resource "aws_lambda_permission" "api_gateway" {
+  count = var.api_id != "" ? 1 : 0
+  
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_alias.live.function_name

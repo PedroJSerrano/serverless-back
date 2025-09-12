@@ -10,11 +10,11 @@
     </parent>
 
     <artifactId>cloud-platform-commons</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
-    <name>aws-common-infrastructure</name>
-    <description>Module for the common infrastructure of AWS services</description>
+    <name>cloud-infrastructure-commons</name>
+    <description>Module for the common cloud infrastructure, following the DRY principle</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -23,6 +23,12 @@
     </properties>
 
     <dependencies>
+        <!-- Dependencias propias -->
+        <dependency>
+            <groupId>dev.pedroenlanube</groupId>
+            <artifactId>business-platform-commons</artifactId>
+        </dependency>
+
         <!-- Spring Cloud Function - Framework para funciones serverless -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -46,15 +52,17 @@
         <!-- AWS SDK - Servicios de AWS (DynamoDB, SSM) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb-enhanced</artifactId>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>ssm</artifactId>
+        </dependency>
+
+        <!-- Lombok - Compile time -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
 
         <!-- Testing - Dependencias para pruebas unitarias -->

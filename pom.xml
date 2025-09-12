@@ -13,8 +13,8 @@
     <description>my serverless app</description>
 
     <modules>
-        <module>authentication-service</module>
-        <module>user-management-service</module>
+        <module>cognito-integration-service</module>
+        <module>user-profile-service</module>
         <module>cloud-infrastructure-commons</module>
         <module>domain-commons</module>
         <module>api-documentation-service</module>
@@ -26,8 +26,10 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.plugin.version>3.3.1</maven.plugin.version>
         <org.maven.plugin.version>3.11.0</org.maven.plugin.version>
+
         <!-- Dependencias propias -->
-        <pedronube.cloud.platform.common.version>1.1.0</pedronube.cloud.platform.common.version>
+        <pedronube.cloud.platform.common.version>2.0.0</pedronube.cloud.platform.common.version>
+        <pedronube.business.platform.common.version>1.0.0</pedronube.business.platform.common.version>
 
         <!-- Dependencias generales -->
         <spring.cloud.function.version>4.3.0</spring.cloud.function.version>
@@ -40,6 +42,7 @@
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.17.2</jackson.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
 
         <!-- Dependencias para testing -->
         <spring.boot.version>3.5.4</spring.boot.version>
@@ -69,6 +72,11 @@
             </dependency>
 
             <!-- Dependencias propias -->
+            <dependency>
+                <groupId>dev.pedroenlanube</groupId>
+                <artifactId>business-platform-commons</artifactId>
+                <version>${pedronube.business.platform.common.version}</version>
+            </dependency>
             <dependency>
                 <groupId>dev.pedroenlanube</groupId>
                 <artifactId>cloud-platform-commons</artifactId>
@@ -109,7 +117,7 @@
             <!-- AWS SDK - Servicios de AWS (DynamoDB, SSM) -->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
-                <artifactId>dynamodb</artifactId>
+                <artifactId>dynamodb-enhanced</artifactId>
                 <version>${amazon.sdk.dynamodb.version}</version>
                 <exclusions>
                     <exclusion>
@@ -121,11 +129,6 @@
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>dynamodb-enhanced</artifactId>
-                <version>${amazon.sdk.dynamodb.version}</version>
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
@@ -169,12 +172,23 @@
                 <version>${jsonwebtoken.version}</version>
             </dependency>
 
-            <!-- Lombok - Compile time -->
+            <!-- Utilidades - Boilerplate -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <scope>provided</scope>
                 <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Testing - Dependencias para pruebas unitarias -->
@@ -191,8 +205,40 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${org.maven.plugin.version}</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <annotationProcessorPaths>
+                            <!-- Procesador de MapStruct -->
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${org.mapstruct.version}</version>
+                            </path>
+                            <!-- Procesador de Lombok -->
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <!--
+                            Opcional pero recomendado:
+                            Hace que Lombok y MapStruct trabajen mejor juntos.
+                            -->
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>0.2.0</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>${maven.shade.plugin.version}</version>
                     <executions>
                         <execution>
                             <phase>package</phase>
