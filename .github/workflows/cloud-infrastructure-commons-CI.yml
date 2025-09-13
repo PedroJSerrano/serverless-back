@@ -1,4 +1,4 @@
-name: CI de Cloud Infrastructure Commons
+name: Cloud Infrastructure Commons CI
 on:
   push:
     branches:

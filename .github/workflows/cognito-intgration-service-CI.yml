@@ -1,4 +1,4 @@
-name: CI de Authentication Service
+name: Cognito Integration Service CI
 on:
   push:
     branches:
