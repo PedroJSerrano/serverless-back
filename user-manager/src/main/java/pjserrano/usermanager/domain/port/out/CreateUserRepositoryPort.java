@@ -1,9 +1,0 @@
-package pjserrano.usermanager.domain.port.out;
-
-import pjserrano.usermanager.domain.model.User;
-
-import java.util.Optional;
-import java.util.function.Function;
-
-public interface CreateUserRepositoryPort extends Function<Optional<User>, Optional<User>> {
-}

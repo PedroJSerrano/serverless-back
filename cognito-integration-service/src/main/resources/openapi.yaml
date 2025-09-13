@@ -1,0 +1,75 @@
+# openapi.yaml
+openapi: 3.0.3
+info:
+  title: Servicio de Autenticación API
+  description: |-
+    API para la gestión de autenticación de usuarios. 
+    Parte de un proyecto de portfolio con arquitectura hexagonal.
+  version: 1.0.0
+  contact:
+    name: PedroEnLaNube
+    url: ''
+    email: contacto@pedroenlanube.dev
+
+# Lista de servidores donde tu API está desplegada
+servers:
+  - url: ''
+    description: Servidor de Desarrollo
+
+# Aquí defines todos tus endpoints (rutas)
+paths:
+  /login:
+    post:
+      summary: Autentica un usuario
+      description: Valida las credenciales y devuelve un token JWT.
+      tags:
+        - Authentication
+      requestBody:
+        description: Credenciales del usuario.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest' # Referencia a un schema
+      responses:
+        '200':
+          description: Autenticación exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# Aquí defines componentes reutilizables como los modelos de datos (schemas)
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: 'testuser'
+        password:
+          type: string
+          format: password
+          example: 'pwdtestuser'
+    LoginResponse:
+      type: object
+      properties:
+        username:
+          type: string
+          example: 'testuser'
+        jwtToken:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'Credenciales inválidas'

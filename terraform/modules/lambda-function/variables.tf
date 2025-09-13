@@ -43,23 +43,27 @@ variable "custom_policies" {
 }
 
 variable "api_id" {
-  description = "API Gateway ID"
+  description = "API Gateway ID (optional for Cognito triggers)"
   type        = string
+  default     = ""
 }
 
 variable "api_execution_arn" {
-  description = "API Gateway execution ARN"
+  description = "API Gateway execution ARN (optional for Cognito triggers)"
   type        = string
+  default     = ""
 }
 
 variable "route_path" {
-  description = "API Gateway route path"
+  description = "API Gateway route path (optional for Cognito triggers)"
   type        = string
+  default     = ""
 }
 
 variable "http_method" {
-  description = "HTTP method for the route"
+  description = "HTTP method for the route (optional for Cognito triggers)"
   type        = string
+  default     = ""
 }
 
 variable "tags" {

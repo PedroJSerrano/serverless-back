@@ -51,3 +51,8 @@ Thumbs.db
 *.log
 log/
 temp/
+
+#---------------------------------------------------#
+# Archivo de claves privadas para pruebas http      #
+#---------------------------------------------------#
+http-client.private.env.json

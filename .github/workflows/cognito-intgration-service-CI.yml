@@ -1,0 +1,35 @@
+name: Cognito Integration Service CI
+on:
+  push:
+    branches:
+      - 'feature/**'
+    paths:
+      - 'cognito-integration-service/**'
+      - 'pom.xml'
+  pull_request:
+    branches:
+      - develop
+      - master
+    paths:
+      - 'cognito-integration-service/**'
+      - 'pom.xml'
+  merge_group:
+    branches:
+      - develop
+      - master
+    paths:
+      - 'cognito-integration-service/**'
+      - 'pom.xml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  call-ci-workflow:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      module_name: 'cognito-integration-service'

@@ -5,31 +5,51 @@ resource "aws_servicecatalogappregistry_application" "main" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Owner          = "pjserrano"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
-# DynamoDB Table
-resource "aws_dynamodb_table" "users" {
-  name           = "users"
+# DynamoDB Single Table
+resource "aws_dynamodb_table" "main" {
+  name           = "serverless-back-table"
   billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "username"
+  hash_key       = "PK"
+  range_key      = "SK"
 
   attribute {
-    name = "username"
+    name = "PK"
     type = "S"
+  }
+  
+  attribute {
+    name = "SK" 
+    type = "S"
+  }
+  
+  attribute {
+    name = "GSI1PK"
+    type = "S"
+  }
+  
+  attribute {
+    name = "GSI1SK"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name     = "GSI1"
+    hash_key = "GSI1PK"
+    range_key = "GSI1SK"
   }
 
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
@@ -40,11 +60,10 @@ resource "aws_apigatewayv2_api" "main" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
-    Architecture   = "hexagonal"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
 
@@ -56,9 +75,9 @@ resource "aws_apigatewayv2_stage" "dev" {
   
   tags = {
     awsApplication = var.project_name
-    Environment    = var.environment
-    Module         = "shared-infrastructure"
-    Owner          = "pjserrano"
-    applicationName = "serverless-fullstack-app"
+    "user:Module"         = "shared-infrastructure"
+    "user:Environment"    = var.environment
+    "user:Owner"          = "pedroenlanube"
+    "user:ApplicationName" = "pedroenlanube-serverless-web-dev"
   }
 }
