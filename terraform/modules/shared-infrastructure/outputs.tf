@@ -14,13 +14,13 @@ output "api_execution_arn" {
 }
 
 output "users_table_name" {
-  description = "Users table name"
-  value       = aws_dynamodb_table.users.name
+  description = "Main table name"
+  value       = aws_dynamodb_table.main.name
 }
 
 output "users_table_arn" {
-  description = "Users table ARN"
-  value       = aws_dynamodb_table.users.arn
+  description = "Main table ARN"
+  value       = aws_dynamodb_table.main.arn
 }
 
 output "app_registry_application_arn" {

@@ -8,9 +8,10 @@ on:
         required: true
         type: choice
         options:
-          - auth-manager
-          - user-manager
-          - aws-common-infrastructure
+          - cognito-integration-service
+          - user-profile-service
+          - domain-commons
+          - cloud-infrastructure-commons
 
 jobs:
   tag-and-release:

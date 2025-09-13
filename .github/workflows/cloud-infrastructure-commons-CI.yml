@@ -1,0 +1,35 @@
+name: Cloud Infrastructure Commons CI
+on:
+  push:
+    branches:
+      - 'feature/**'
+    paths:
+      - 'cloud-infrastructure-commons/**'
+      - 'pom.xml'
+  pull_request:
+    branches:
+      - develop
+      - master
+    paths:
+      - 'cloud-infrastructure-commons/**'
+      - 'pom.xml'
+  merge_group:
+    branches:
+      - develop
+      - master
+    paths:
+      - 'cloud-infrastructure-commons/**'
+      - 'pom.xml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  call-ci-workflow:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      module_name: 'cloud-infrastructure-commons'

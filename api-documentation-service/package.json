@@ -1,0 +1,10 @@
+{
+  "name": "api-docs",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "redocly bundle main -o public/docs.html"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.13.0"
+  }
+}
