@@ -8,8 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - authentication-service
-          - user-management-service
+          - cognito-integration-service
+          - user-profile-service
+          - domain-commons
           - cloud-infrastructure-commons
 
 jobs:

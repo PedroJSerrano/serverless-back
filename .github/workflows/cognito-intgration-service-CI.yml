@@ -4,21 +4,21 @@ on:
     branches:
       - 'feature/**'
     paths:
-      - 'authentication-service/**'
+      - 'cognito-integration-service/**'
       - 'pom.xml'
   pull_request:
     branches:
       - develop
       - master
     paths:
-      - 'authentication-service/**'
+      - 'cognito-integration-service/**'
       - 'pom.xml'
   merge_group:
     branches:
       - develop
       - master
     paths:
-      - 'authentication-service/**'
+      - 'cognito-integration-service/**'
       - 'pom.xml'
 
   workflow_dispatch:
@@ -32,4 +32,4 @@ jobs:
   call-ci-workflow:
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      module_name: 'authentication-service'
+      module_name: 'cognito-integration-service'
